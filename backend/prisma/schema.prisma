@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id     Int     @id @default(autoincrement())
+  name   String
+  email  String  @unique
+  phone  Int
+  orders Order[]
+}
+
+
+
+enum ServiceType {
+  CUCI
+  SETRIKA
+  CUCI_SETRIKA
+}
+
+enum ServiceCategory {
+  NORMAL
+  EXPRESS
+}
+
+enum OrderStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model Order {
+  id     Int  @id @default(autoincrement())
+  uniqueCode String @unique
+  //relasi ke admin
+  adminId Int
+  admin   Admin @relation(fields: [adminId], references: [id])
+ 
+
+  serviceType     ServiceType //cuci ,setrika, cuci-setrika
+  serviceCategory ServiceCategory //normal, express
+
+  Category String //"boneka, pakaian , sepatu , tas ,dll"
+  weight   Float //dalam kg
+
+  dropOffDate DateTime @default(now()) //waktu antar pakaian
+  pickUpDate  DateTime //waktu ambil pakaian
+
+  status    OrderStatus //status order : "pending", "in_progress", "completed", "cancelled"
+  price     Int //total harga
+  createdAt DateTime    @default(now())
+}
