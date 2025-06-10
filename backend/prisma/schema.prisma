@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -12,7 +11,8 @@ model Admin {
   id     Int     @id @default(autoincrement())
   name   String
   email  String  @unique
-  phone  Int
+  password String
+  phone  String
   orders Order[]
 }
 
