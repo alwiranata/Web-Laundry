@@ -6,3 +6,8 @@ export const AdminRegisterSchema = z.object({
     password : z.string().min(1,{message:"Password Harus Diisi"}),
     phone : z.string().min(12,{message:"Nomor Telepon Harus Diisi"})
 })
+
+export const AdminLoginSchema = z.object({
+    email : z.string().email("Email Tidak Valid"),
+    password : z.string().min(1,{message : "Password  Harus Diisi"})
+})
