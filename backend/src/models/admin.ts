@@ -9,3 +9,8 @@ export type AdminLogin =  {
     email : string
     password : string
 }
+
+export type AdminPayLoad = {
+    id : number
+    email : string
+}

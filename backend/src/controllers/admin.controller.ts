@@ -1,4 +1,4 @@
-import {Request, Response} from "express"
+import {Request, RequestHandler, Response} from "express"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import {PrismaClient} from "@prisma/client"
@@ -6,12 +6,13 @@ import {AdminLogin, AdminRegister} from "../models/admin"
 import {AdminLoginSchema, AdminRegisterSchema} from "../validators/adminValidator"
 import {any, z} from "zod"
 import { console } from "inspector"
+import { AdminRequest } from "../middleware/adminRequest"
 const prisma = new PrismaClient()
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret"
 
 //Registrasi Admin 
-export const registerAdmin = async (req : Request , res : Response): Promise<any> =>{
+export const registerAdmin = async (req : Request , res : Response): Promise<void> =>{
     try {
         const inputRegisterAdmin  : AdminRegister = AdminRegisterSchema.parse(req.body)
 
@@ -20,9 +21,10 @@ export const registerAdmin = async (req : Request , res : Response): Promise<any
 		})
 
 		if (existing) {
-			return res.status(400).json({
+			res.status(400).json({
 				message: "Email sudah terdaftar",
 			})
+			return
 		}
 
 		const hashedPassword = await bcrypt.hash(inputRegisterAdmin.password, 10)
@@ -33,28 +35,29 @@ export const registerAdmin = async (req : Request , res : Response): Promise<any
 
 		const {password, ...adminWithoutPassword} = newAdmin
 
-		return res.status(201).json({
+	    res.status(201).json({
 			message: "Registrasi Berhasil",
 			admin: adminWithoutPassword,
 		})
 		
 	} catch (error) {
 		if (error instanceof z.ZodError) {
-			return res.status(400).json({
+			res.status(400).json({
 				errors: Object.fromEntries(
 					error.errors.map((err: any) => [err.path[0], err.message])
 				),
 			})
+			return
 		}
 
-		return res.status(500).json({
+		res.status(500).json({
 			message: "Terjadi kesalahan pada server",
 			error : error
 		})
 	}
 }
 
-export const loginAdmin = async (req: Request, res: Response): Promise<any> => {
+export const loginAdmin = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const inputLoginAdmin : AdminLogin = AdminLoginSchema.parse(req.body)
 
@@ -65,9 +68,10 @@ export const loginAdmin = async (req: Request, res: Response): Promise<any> => {
 		const isMatch = await bcrypt.compare(inputLoginAdmin.password, admin!.password)
 
 		if(!admin || !isMatch) {
-			return res.status(401).json({
+			 res.status(401).json({
 				message : "Email atau Password Salah"
 			})
+			return
 		}
 
 		const token = jwt.sign(
@@ -84,11 +88,12 @@ export const loginAdmin = async (req: Request, res: Response): Promise<any> => {
 		})
 	} catch (error) {
 		if(error instanceof z.ZodError){
-			return res.status(400).json({
+			 res.status(400).json({
 				errors : Object.fromEntries(
 					error.errors.map((err : any) => [err.path[0], err.message])
 				)
 			})
+			return
 		}
 
         res.status(500).json({
@@ -96,4 +101,25 @@ export const loginAdmin = async (req: Request, res: Response): Promise<any> => {
             error : error
         })
     }
+}
+
+export const dashboardAdmin :RequestHandler = async (req : AdminRequest , res:Response) : Promise<void> => {
+	try {
+	 const admin = req.user 
+	 
+	 if(!admin) {
+		res.status(401).json({
+			message : "Akses dittolak token tidak ditemukan"
+		})
+		return
+	 }
+	   res.status (200).json({
+		message : "Dashboard Admin",
+	  })
+	} catch (error) {
+	    res.status(500).json({
+			message : "Terjaid keslaah pada server",
+			error : error
+		})
+	}
 }
