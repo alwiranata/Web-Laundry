@@ -38,19 +38,21 @@ enum OrderStatus {
 
 model Order {
   id     Int  @id @default(autoincrement())
-  uniqueCode String @unique
+  uniqueCode String @unique //Kode Unik untuk setiap Order
   //relasi ke admin
   adminId Int
   admin   Admin @relation(fields: [adminId], references: [id])
  
 
-  serviceType     ServiceType //cuci ,setrika, cuci-setrika
-  serviceCategory ServiceCategory //normal, express
+  serviceType     ServiceType //cuci ,setrika, cuci dan setrika
 
-  Category String //"boneka, pakaian , sepatu , tas ,dll"
+  serviceCategory ServiceCategory //normal, express
+  priceCategory Int //harga normal /harag express
+  category String //"boneka, pakaian , sepatu , tas ,dll"
+
   weight   Float //dalam kg
 
-  dropOffDate DateTime @default(now()) //waktu antar pakaian
+  dropOffDate DateTime  //waktu antar pakaian
   pickUpDate  DateTime //waktu ambil pakaian
 
   status    OrderStatus //status order : "pending", "in_progress", "completed", "cancelled"

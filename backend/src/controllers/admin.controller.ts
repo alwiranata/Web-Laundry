@@ -4,8 +4,7 @@ import jwt from "jsonwebtoken"
 import {PrismaClient} from "@prisma/client"
 import {AdminLogin, AdminRegister} from "../models/admin"
 import {AdminLoginSchema, AdminRegisterSchema} from "../validators/adminValidator"
-import {any, z} from "zod"
-import { console } from "inspector"
+import {z} from "zod"
 import { AdminRequest } from "../middleware/adminRequest"
 const prisma = new PrismaClient()
 
@@ -44,7 +43,7 @@ export const registerAdmin = async (req : Request , res : Response): Promise<voi
 		if (error instanceof z.ZodError) {
 			res.status(400).json({
 				errors: Object.fromEntries(
-					error.errors.map((err: any) => [err.path[0], err.message])
+					error.errors.map((err) => [err.path[0], err.message])
 				),
 			})
 			return
@@ -90,7 +89,7 @@ export const loginAdmin = async (req: Request, res: Response): Promise<void> => 
 		if(error instanceof z.ZodError){
 			 res.status(400).json({
 				errors : Object.fromEntries(
-					error.errors.map((err : any) => [err.path[0], err.message])
+					error.errors.map((err) => [err.path[0], err.message])
 				)
 			})
 			return
@@ -103,23 +102,3 @@ export const loginAdmin = async (req: Request, res: Response): Promise<void> => 
     }
 }
 
-export const dashboardAdmin :RequestHandler = async (req : AdminRequest , res:Response) : Promise<void> => {
-	try {
-	 const admin = req.user 
-	 
-	 if(!admin) {
-		res.status(401).json({
-			message : "Akses dittolak token tidak ditemukan"
-		})
-		return
-	 }
-	   res.status (200).json({
-		message : "Dashboard Admin",
-	  })
-	} catch (error) {
-	    res.status(500).json({
-			message : "Terjaid keslaah pada server",
-			error : error
-		})
-	}
-}

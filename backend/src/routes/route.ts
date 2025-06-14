@@ -5,6 +5,7 @@ import {
     dashboardAdmin
 } from '../controllers/admin.controller';
 import authenticateToken from '../middleware/authenticateToken';
+import { createOrder } from '../controllers/order.Controller';
 
 const router = Router();
 
@@ -15,4 +16,6 @@ router.post('/admin/register', registerAdmin);
 router.post('/admin/login',loginAdmin)
 
 router.get('/admin/dashboard',authenticateToken, dashboardAdmin)
+
+router.post('/order/create',authenticateToken, createOrder )
 export default router;
