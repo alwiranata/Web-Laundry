@@ -1,11 +1,40 @@
 import { Request ,Response  } from "express";
-import { Admin, PrismaClient, ServiceCategory } from "@prisma/client";
+import { Admin, Prisma, PrismaClient, ServiceCategory } from "@prisma/client";
 import { OrderItemSchema } from "../validators/orderValidator";
 import {z} from "zod"
 import { generateUniqueCode } from "../utils/generateCode";
 import { Order } from "../models/order";
 import {AdminRequest} from "../middleware/adminRequest";
 const prisma = new PrismaClient
+
+export const getOrderForUser = async(req : Request , res : Response ) : Promise<void> =>{
+    try {
+        const {uniqueCode} = req.params
+
+        const  order = await prisma.order.findMany({
+            where : {
+               uniqueCode : uniqueCode
+            },
+
+            orderBy : {
+                createdAt: "desc"
+            }
+        })
+        res.status(200).json({
+            message : "Order Ditemukan",
+            order : order
+        })
+    } catch (error) {
+        if(error instanceof z.ZodError){
+           res.status(400).json({
+                errors : Object.fromEntries(
+                    error.errors.map((err) => [err.path[0], err.message]) 
+                )
+            })
+            return
+        }
+    }
+}
 
 export const createOrder = async(req :AdminRequest , res : Response ) :Promise<void> =>{
     try {
@@ -19,10 +48,10 @@ export const createOrder = async(req :AdminRequest , res : Response ) :Promise<v
         }
 
         const input :Order = OrderItemSchema.parse(req.body)
-         const priceCategory = input.priceCategory ?? 0 
-         const weight = input.weight ?? 0
+        const priceCategory = input.priceCategory ?? 0 
+        const weight = input.weight ?? 0
 
-         const price =(input.priceCategory !== 0 && input.weight !== 0)  ? priceCategory * weight : input.price
+        const price =(input.priceCategory !== 0 && input.weight !== 0)  ? priceCategory * weight : input.price
 
 
        const newOrder = await prisma.order.create({

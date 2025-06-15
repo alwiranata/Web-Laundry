@@ -47,7 +47,7 @@ model Order {
   serviceType     ServiceType //cuci ,setrika, cuci dan setrika
 
   serviceCategory ServiceCategory //normal, express
-  priceCategory Int //harga normal /harag express
+  priceCategory Int //harga normal /harg express
   category String //"boneka, pakaian , sepatu , tas ,dll"
 
   weight   Float //dalam kg
