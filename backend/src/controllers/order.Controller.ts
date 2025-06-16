@@ -36,6 +36,46 @@ export const getOrderForUser = async(req : Request , res : Response ) : Promise<
     }
 }
 
+export const getAllOrder = async (req: AdminRequest, res: Response): Promise<void> => {
+  try {
+    const admin = req.user;
+
+    if (!admin) {
+      res.status(401).json({
+        message: "Akses Ditolak, Token Tidak Valid"
+      });
+      return;
+    }
+
+    const orders = await prisma.order.findMany({
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
+
+    res.status(200).json({
+      message: `Daftar order berhasil diambil oleh admin: ${admin.email}`,
+      data: orders
+    });
+
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({
+        error: Object.fromEntries(
+          error.errors.map((err) => [err.path[0], err.message])
+        )
+      });
+      return;
+    }
+
+    res.status(500).json({
+      message: "Terjadi kesalahan pada server",
+      errors: error
+    });
+  }
+};
+
+
 export const createOrder = async(req :AdminRequest , res : Response ) :Promise<void> =>{
     try {
         const admin  = req.user 

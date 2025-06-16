@@ -67,7 +67,7 @@ export const loginAdmin = async (req: Request, res: Response): Promise<void> => 
 		const isMatch = await bcrypt.compare(inputLoginAdmin.password, admin!.password)
 
 		if(!admin || !isMatch) {
-			 res.status(401).json({
+			res.status(401).json({
 				message : "Email atau Password Salah"
 			})
 			return
