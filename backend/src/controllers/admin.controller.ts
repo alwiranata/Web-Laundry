@@ -6,6 +6,7 @@ import {AdminLogin, AdminRegister} from "../models/admin"
 import {AdminLoginSchema, AdminRegisterSchema} from "../validators/adminValidator"
 import {z} from "zod"
 import { AdminRequest } from "../middleware/adminRequest"
+import { profile } from "console"
 const prisma = new PrismaClient()
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret"
@@ -102,3 +103,93 @@ export const loginAdmin = async (req: Request, res: Response): Promise<void> => 
     }
 }
 
+
+export const getAdminProfile = async (req : AdminRequest , res : Response) : Promise<void> =>{
+	try {
+	 const admin = req.user
+
+	 if(!admin){
+		res.status(401).json({
+			message : "Akses ditolak, token tidak valid"
+		})
+		return
+	 }
+
+	 const {id} = req.params
+	 const idAdmin = parseInt(id , 10)
+
+	 if(isNaN(idAdmin)){
+		res.status(400).json({
+			message : "ID admin tidak valid"
+		})
+		return
+	 }
+
+	 const adminProfile = await prisma.admin.findUnique({
+		where : {id : idAdmin}
+	 })
+
+	if(!adminProfile){
+		res.status(404).json({
+			message : "Admin tidak ditemukan"
+		})
+		return
+	}
+
+
+	res.status(200).json({
+		message : "Profil admin berhasil diambil",
+		profile : adminProfile
+	})
+
+
+	} catch (error) {
+		if(error instanceof z.ZodError){
+			res.status(400).json({
+				error : Object.fromEntries(
+					error.errors.map((err) => [err.path[0], err.message])
+				)
+			})
+		}
+		res.status(500).json({
+			message : "Terjadi kesalahan pada server",
+			error : error
+		})
+	}
+}
+
+export const getAllAdminProfile =async (req: AdminRequest ,res :Response): Promise<void>=>{
+	try {
+		const admin = req.user
+		if(!admin){
+			res.status(401).json({
+				message : "Akses ditolak, token tidak valid"
+			})
+		}
+
+		const allAdminProfile = await prisma.admin.findMany({
+			orderBy : {
+				id : "asc"
+			}
+		})
+
+		res.status(200).json({
+			message : "Semua profil admin berhasil diambil",
+			profiles : allAdminProfile
+		})
+		
+	} catch (error) {
+		if(error instanceof z.ZodError){
+			res.status(400).json({
+				error : Object.fromEntries(
+					error.errors.map((err) => [err.path[0],err.message])
+				)
+			})
+		}
+
+		res.status(500).json({
+			message : "Terjadi kesalahan pada server",
+			error : error
+		})
+	}
+}

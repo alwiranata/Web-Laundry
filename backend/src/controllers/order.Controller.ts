@@ -49,7 +49,7 @@ export const getAllOrder = async (req: AdminRequest, res: Response): Promise<voi
 
     const orders = await prisma.order.findMany({
       orderBy: {
-        createdAt: "desc"
+        createdAt: "asc"
       }
     });
 
