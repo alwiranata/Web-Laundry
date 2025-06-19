@@ -4,6 +4,8 @@ import {
     loginAdmin,
     getAdminProfile,
     getAllAdminProfile,
+    deleteAdmin,
+    updateAdmin
 } from '../controllers/admin.controller';
 import authenticateToken from '../middleware/authenticateToken';
 import { 
@@ -11,7 +13,7 @@ import {
     getOrderForUser,
     getAllOrder,
     updateOrder,
-    deleteOrder
+    deleteOrder,
 
  } from '../controllers/order.Controller';
 
@@ -28,6 +30,12 @@ router.get("/admin/getProfile/:id",authenticateToken, getAdminProfile)
 
 //get  AllAdmins
 router.get("/admin/getAllProfile", authenticateToken, getAllAdminProfile )
+
+//delete Admin
+router.delete("/admin/deleteAdmin/:id", authenticateToken, deleteAdmin )
+
+//update Admin
+router.put("/admin/updateAdmin/:id", authenticateToken, updateAdmin )
 
 //Cretes orders
 router.post('/order/create',authenticateToken, createOrder )
