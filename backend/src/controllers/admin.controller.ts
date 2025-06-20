@@ -6,8 +6,6 @@ import {AdminLogin, AdminRegister} from "../models/admin"
 import {AdminLoginSchema, AdminRegisterSchema, AdminUpdateSchema} from "../validators/adminValidator"
 import {string, z} from "zod"
 import { AdminRequest } from "../middleware/adminRequest"
-import { profile } from "console"
-import { parse } from "path"
 const prisma = new PrismaClient()
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret"
@@ -230,7 +228,7 @@ export const updateAdmin = async(req : AdminRequest ,res : Response) : Promise<v
 		const input   = AdminUpdateSchema.parse(req.body)
 
 	    if (idAdmin === req.user?.id && ("email" in input || "password" in input)) {
-			
+
 			res.status(400).json({
 				message: "Anda tidak dapat mengubah email dan password anda sendiri ketika sedang login",
 			})
