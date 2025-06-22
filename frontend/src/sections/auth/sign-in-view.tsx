@@ -1,9 +1,12 @@
+import axios from 'axios';
 import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
+import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import Collapse from '@mui/material/Collapse';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
@@ -19,10 +22,44 @@ export function SignInView() {
   const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const handleSignIn = useCallback(() => {
-    router.push('/');
-  }, [router]);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertSeverity, setAlertSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('success');
+
+ const handleSignIn = useCallback(async () => {
+  try {
+    const res = await axios.post('http://localhost:3000/api/admin/login', {
+      email,
+      password,
+    });
+
+    const { token, email: loggedInEmail } = res.data; // pastikan backend mengirim { token, email }
+
+    if (token && loggedInEmail) {
+      localStorage.setItem('token', token);
+      localStorage.setItem('email', loggedInEmail);
+
+      setAlertSeverity('success');
+      setAlertMessage('Login berhasil!');
+      setAlertOpen(true);
+
+      setTimeout(() => {
+        router.push('/user');
+      }, 1000);
+    } else {
+      setAlertSeverity('error');
+      setAlertMessage('Login gagal: token atau email tidak ditemukan.');
+      setAlertOpen(true);
+    }
+  } catch (error: any) {
+    setAlertSeverity('error');
+    setAlertMessage(error.response?.data?.message || 'Email atau password salah!');
+    setAlertOpen(true);
+  }
+}, [email, password, router]);
 
   const renderForm = (
     <Box
@@ -36,7 +73,8 @@ export function SignInView() {
         fullWidth
         name="email"
         label="Email address"
-        defaultValue="hello@gmail.com"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
         sx={{ mb: 3 }}
         slotProps={{
           inputLabel: { shrink: true },
@@ -51,7 +89,8 @@ export function SignInView() {
         fullWidth
         name="password"
         label="Password"
-        defaultValue="@demo1234"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
         type={showPassword ? 'text' : 'password'}
         slotProps={{
           inputLabel: { shrink: true },
@@ -76,7 +115,7 @@ export function SignInView() {
         variant="contained"
         onClick={handleSignIn}
       >
-        Sign in
+        Login
       </Button>
     </Box>
   );
@@ -92,20 +131,27 @@ export function SignInView() {
           mb: 5,
         }}
       >
-        <Typography variant="h5">Sign in</Typography>
-        <Typography
-          variant="body2"
-          sx={{
-            color: 'text.secondary',
-          }}
-        >
+        <Typography variant="h5">Login</Typography>
+        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           Don’t have an account?
-          <Link variant="subtitle2" sx={{ ml: 0.5 }}>
-            Get started
+          <Link href="/" variant="subtitle2" sx={{ ml: 0.5 }}>
+            Register
           </Link>
         </Typography>
       </Box>
+
+      <Collapse in={alertOpen}>
+        <Alert
+          severity={alertSeverity}
+          onClose={() => setAlertOpen(false)}
+          sx={{ mb: 3, width: '100%' }}
+        >
+          {alertMessage}
+        </Alert>
+      </Collapse>
+
       {renderForm}
+
       <Divider sx={{ my: 3, '&::before, &::after': { borderTopStyle: 'dashed' } }}>
         <Typography
           variant="overline"
@@ -114,6 +160,7 @@ export function SignInView() {
           OR
         </Typography>
       </Divider>
+
       <Box
         sx={{
           gap: 1,
@@ -126,9 +173,6 @@ export function SignInView() {
         </IconButton>
         <IconButton color="inherit">
           <Iconify width={22} icon="socials:github" />
-        </IconButton>
-        <IconButton color="inherit">
-          <Iconify width={22} icon="socials:twitter" />
         </IconButton>
       </Box>
     </>

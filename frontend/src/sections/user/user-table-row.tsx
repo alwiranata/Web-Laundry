@@ -1,7 +1,5 @@
 import { useState, useCallback } from 'react';
 
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
 import Popover from '@mui/material/Popover';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
@@ -10,29 +8,27 @@ import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 
-import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export type UserProps = {
+export type RowProps = {
   id: string;
   name: string;
-  role: string;
-  status: string;
-  company: string;
-  avatarUrl: string;
-  isVerified: boolean;
+  email: string;
+  phone: string;
+  password: string;
 };
 
 type UserTableRowProps = {
-  row: UserProps;
+  row: RowProps;
   selected: boolean;
   onSelectRow: () => void;
 };
 
 export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) {
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
+  const [visiblePasswords, setVisiblePasswords] = useState<Record<string, boolean>>({});
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     setOpenPopover(event.currentTarget);
@@ -42,6 +38,13 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
     setOpenPopover(null);
   }, []);
 
+  const handleTogglePassword = (userId: string) => {
+    setVisiblePasswords((prev) => ({
+      ...prev,
+      [userId]: !prev[userId],
+    }));
+  };
+
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
@@ -49,33 +52,24 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
           <Checkbox disableRipple checked={selected} onChange={onSelectRow} />
         </TableCell>
 
-        <TableCell component="th" scope="row">
-          <Box
-            sx={{
-              gap: 2,
-              display: 'flex',
-              alignItems: 'center',
-            }}
+        <TableCell>{row.name}</TableCell>
+        <TableCell>{row.email}</TableCell>
+        <TableCell>{row.phone}</TableCell>
+
+        <TableCell sx={{ width: 180, fontFamily: 'monospace', whiteSpace: 'nowrap' }}>
+          {visiblePasswords[row.id]
+            ? row.password.slice(0, 9)
+            : '•'.repeat(Math.min(9, row.password.length))}
+
+          <IconButton
+            size="small"
+            onClick={() => handleTogglePassword(row.id)}
+            sx={{ ml: 1 }}
           >
-            <Avatar alt={row.name} src={row.avatarUrl} />
-            {row.name}
-          </Box>
-        </TableCell>
-
-        <TableCell>{row.company}</TableCell>
-
-        <TableCell>{row.role}</TableCell>
-
-        <TableCell align="center">
-          {row.isVerified ? (
-            <Iconify width={22} icon="solar:check-circle-bold" sx={{ color: 'success.main' }} />
-          ) : (
-            '-'
-          )}
-        </TableCell>
-
-        <TableCell>
-          <Label color={(row.status === 'banned' && 'error') || 'success'}>{row.status}</Label>
+            <Iconify
+              icon={visiblePasswords[row.id] ? 'solar:eye-bold' : 'solar:eye-closed-bold'}
+            />
+          </IconButton>
         </TableCell>
 
         <TableCell align="right">

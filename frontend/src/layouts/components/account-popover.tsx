@@ -65,7 +65,7 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
         {...other}
       >
         <Avatar src={_myAccount.photoURL} alt={_myAccount.email} sx={{ width: 1, height: 1 }}>
-         { _myAccount.email?.charAt(0)}
+          {_myAccount.email?.charAt(0)}
         </Avatar>
       </IconButton>
 
@@ -125,9 +125,20 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Box sx={{ p: 1 }}>
-          <Button fullWidth color="error" size="medium" variant="text">
+          <Button
+            fullWidth
+            color="error"
+            size="medium"
+            variant="text"
+            onClick={() => {
+              localStorage.removeItem('token');      // Hapus token
+              localStorage.removeItem('email');      // Hapus email
+              router.push('/sign-in');                 // Redirect ke login
+            }}
+          >
             Logout
           </Button>
+
         </Box>
       </Popover>
     </>

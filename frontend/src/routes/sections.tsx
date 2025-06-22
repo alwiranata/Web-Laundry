@@ -15,6 +15,7 @@ import { DashboardLayout } from 'src/layouts/dashboard';
 export const DashboardPage = lazy(() => import('src/pages/dashboard'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
+export const Register = lazy(() => import('src/pages/register'));
 export const OrderPage = lazy(() => import('src/pages/order'))
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
@@ -48,10 +49,19 @@ export const routesSection: RouteObject[] = [
       </DashboardLayout>
     ),
     children: [
-      { index: true, element: <DashboardPage /> },
+      { path: 'dashboard', element: <DashboardPage /> },
       { path: 'user', element: <UserPage /> },
       { path: 'order', element : <OrderPage/>}
+
     ],
+  },
+   {
+    index: true,
+    element: (
+      <AuthLayout>
+        <Register />
+      </AuthLayout>
+    ),
   },
   {
     path: 'sign-in',

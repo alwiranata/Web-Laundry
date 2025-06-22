@@ -1,14 +1,14 @@
 
-import { SignInView } from 'src/sections/auth';
+import { SignUpView } from 'src/sections/auth/register';
 
 // ----------------------------------------------------------------------
 
 export default function Page() {
   return (
     <>
-      <title>Sign-in</title>
+      <title>Register</title>
 
-      <SignInView />
+      <SignUpView />
     </>
   );
 }

@@ -1,19 +1,24 @@
 import {
   _id,
-  _price,
   _times,
   _company,
   _boolean,
   _fullName,
   _postTitles,
   _description,
-  _productNames,
 } from './_mock';
 
-// ----------------------------------------------------------------------
+// Ambil email dari localStorage (hanya di browser)
+const getUserEmail = () => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('email') || 'guest@email.com';
+  }
+  return '';
+};
+//----------------------------------------------------------------------
 
 export const _myAccount = {
-  email: 'demo@minimals.cc',
+  email: getUserEmail(),
   photoURL: '/assets/images/avatar/avatar-25.webp',
 };
 
@@ -61,7 +66,7 @@ export const _posts = [...Array(23)].map((_, index) => ({
 
 // ----------------------------------------------------------------------
 
-const COLORS = [
+export const COLORS = [
   '#00AB55',
   '#000000',
   '#FFFFFF',
@@ -71,5 +76,3 @@ const COLORS = [
   '#94D82D',
   '#FFC107',
 ];
-
-

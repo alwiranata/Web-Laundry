@@ -1,13 +1,40 @@
+import axios from 'axios';
+import { useState, useEffect } from 'react';
+
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { AnalyticsWidgetSummary } from '../analytics-widget-summary';
-
 // ----------------------------------------------------------------------
 
+
 export function OverviewAnalyticsView() {
+  const [totalPendapatan, setTotalPendapatan] = useState(0);
+  const [totalOrder, setTotalOrder] = useState(0);
+
+ useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get('http://localhost:3000/api/order/getAll', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log('Statistik:', res.data);
+      setTotalPendapatan(res.data.allPrices || 0);
+      setTotalOrder(res.data.orders || 0);
+
+    } catch (error) {
+      console.error('Gagal ambil data statistik:', error);
+    }
+  };
+
+  fetchData();
+}, []);
   return (
     <DashboardContent maxWidth="xl">
       <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
@@ -19,7 +46,7 @@ export function OverviewAnalyticsView() {
           <AnalyticsWidgetSummary
             title="Total Order"
             percent={2.6}
-            total={714000}
+            total={totalOrder}
             icon={<img alt="Weekly sales" src="/assets/icons/glass/ic-glass-bag.svg" />}
             chart={{
               categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
@@ -32,7 +59,7 @@ export function OverviewAnalyticsView() {
           <AnalyticsWidgetSummary
             title="Admin"
             percent={-0.1}
-            total={1352831}
+            total={13}
             color="secondary"
             icon={<img alt="New users" src="/assets/icons/glass/ic-glass-users.svg" />}
             chart={{
@@ -46,7 +73,7 @@ export function OverviewAnalyticsView() {
           <AnalyticsWidgetSummary
             title="Total Pendapatan"
             percent={2.8}
-            total={1723315}
+            total={totalPendapatan}
             color="warning"
             icon={<img alt="Purchase orders" src="/assets/icons/glass/ic-glass-buy.svg" />}
             chart={{
@@ -69,10 +96,6 @@ export function OverviewAnalyticsView() {
             }}
           />
         </Grid>
-
-       
-
-       
       </Grid>
     </DashboardContent>
   );
