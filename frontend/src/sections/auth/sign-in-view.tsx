@@ -47,7 +47,7 @@ export function SignInView() {
       setAlertOpen(true);
 
       setTimeout(() => {
-        router.push('/user');
+        router.push('/dashboard');
       }, 1000);
     } else {
       setAlertSeverity('error');

@@ -13,32 +13,66 @@ import { AnalyticsWidgetSummary } from '../analytics-widget-summary';
 export function OverviewAnalyticsView() {
   const [totalPendapatan, setTotalPendapatan] = useState(0);
   const [totalOrder, setTotalOrder] = useState(0);
+  const [totalAdmin, setTotalAdmin] = useState(0)
+  const [myPrice , setMyPrice] = useState(0)
+  const [name ,setName]  = useState("")
 
  useEffect(() => {
-  const fetchData = async () => {
+  const fetchOrder = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:3000/api/order/getAll', {
+      const resOrder = await axios.get('http://localhost:3000/api/order/getAll', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      console.log('Statistik:', res.data);
-      setTotalPendapatan(res.data.allPrices || 0);
-      setTotalOrder(res.data.orders || 0);
-
+      setTotalPendapatan(resOrder.data.allPrices || 0);
+      setTotalOrder(resOrder.data.orders || 0);
     } catch (error) {
       console.error('Gagal ambil data statistik:', error);
     }
   };
 
-  fetchData();
+  fetchOrder();
+}, []);
+
+
+  useEffect(() => {
+    const fetchAllAdmins = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get('http://localhost:3000/api/admin/getAllProfile', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setTotalAdmin(res.data.length)
+      } catch (err) {
+        console.error('Gagal mengambil data semua admin:', err);
+      }
+    };
+    fetchAllAdmins();
+  }, []);
+
+ useEffect(() => {
+  const fetchMyPrice = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get('http://localhost:3000/api/admin/getProfile', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setMyPrice(res.data.myPrice || 0);
+      setName(res.data.name || "")
+    } catch (error) {
+      console.error('Gagal mengambil myPrice:', error);
+    }
+  };
+
+  fetchMyPrice();
 }, []);
   return (
     <DashboardContent maxWidth="xl">
       <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
-        Hi, Admin 👋
+        Hi, {name}
       </Typography>
 
       <Grid container spacing={3}>
@@ -58,8 +92,8 @@ export function OverviewAnalyticsView() {
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <AnalyticsWidgetSummary
             title="Admin"
-            percent={-0.1}
-            total={13}
+            percent={13}
+            total={totalAdmin}
             color="secondary"
             icon={<img alt="New users" src="/assets/icons/glass/ic-glass-users.svg" />}
             chart={{
@@ -85,9 +119,9 @@ export function OverviewAnalyticsView() {
 
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <AnalyticsWidgetSummary
-            title="Messages"
+            title="Pendapatan Saya"
             percent={3.6}
-            total={234}
+            total={myPrice}
             color="error"
             icon={<img alt="Messages" src="/assets/icons/glass/ic-glass-message.svg" />}
             chart={{
