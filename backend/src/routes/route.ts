@@ -26,7 +26,7 @@ router.post('/admin/register', registerAdmin);
 router.post('/admin/login',loginAdmin)
 
 //get Admin 
-router.get("/admin/getProfile/:id",authenticateToken, getAdminProfile)
+router.get("/admin/getProfile",authenticateToken, getAdminProfile)
 
 //get  AllAdmins
 router.get("/admin/getAllProfile", authenticateToken, getAllAdminProfile )
@@ -51,6 +51,7 @@ router.put('/order/update/:id', authenticateToken, updateOrder)
 
 //delete Order
 router.delete('/order/delete/:id', authenticateToken, deleteOrder)
+
 
 
 export default router;

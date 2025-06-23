@@ -53,9 +53,13 @@ export const getAllOrder = async (req: AdminRequest, res: Response): Promise<voi
       }
     });
 
+
+    const allPrices = orders.reduce((acc, order) => acc + (order.price || 0), 0);
+
     res.status(200).json({
       message: `Daftar order berhasil diambil oleh admin: ${admin.email}`,
-      data: orders
+      allPrices : allPrices,
+      orders : orders.length 
     });
 
   } catch (error) {
@@ -255,3 +259,5 @@ export const deleteOrder  = async(req : AdminRequest , res : Response) =>{
     })
   }
 }
+
+
