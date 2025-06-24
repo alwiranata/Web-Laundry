@@ -1,7 +1,5 @@
 import { useState, useCallback } from 'react';
 
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
 import Popover from '@mui/material/Popover';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
@@ -10,29 +8,62 @@ import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 
-import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
-
-export type UserProps = {
-  id: string;
-  name: string;
-  role: string;
+// Di user-table-row.tsx (contoh lengkap RowProps yang diperlukan)
+export type RowProps = {
+  id: number;
+  uniqueCode: string;
+  serviceType: string;
+  serviceCategory: string;
+  priceCategory: number;
+  category: string;
+  weight: number;
+  pickUpDate: string;
+  dropOffDate: string;
   status: string;
-  company: string;
-  avatarUrl: string;
-  isVerified: boolean;
+  price: number;
 };
 
+
 type UserTableRowProps = {
-  row: UserProps;
+  row: RowProps;
   selected: boolean;
   onSelectRow: () => void;
 };
 
+function formatDate(date: string) {
+  return new Date(date).toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+function formatStatus(status: string) {
+  switch (status) {
+    case 'PENDING':
+      return 'Pending';
+    case 'IN_PROGRESS':
+      return 'Sedang Dikerjakan';
+    case 'COMPLETED':
+      return 'Selesai';
+    case 'CANCELLED':
+      return 'Dibatalkan';
+    default:
+      return status;
+  }
+}
+
+function formatCurrency(value: number) {
+  return `Rp ${value.toLocaleString('id-ID')}`;
+}
+
+
 export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) {
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
+  const [visiblePasswords, setVisiblePasswords] = useState<Record<string, boolean>>({});
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     setOpenPopover(event.currentTarget);
@@ -42,6 +73,13 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
     setOpenPopover(null);
   }, []);
 
+  const handleTogglePassword = (userId: string) => {
+    setVisiblePasswords((prev) => ({
+      ...prev,
+      [userId]: !prev[userId],
+    }));
+  };
+
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
@@ -49,34 +87,17 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
           <Checkbox disableRipple checked={selected} onChange={onSelectRow} />
         </TableCell>
 
-        <TableCell component="th" scope="row">
-          <Box
-            sx={{
-              gap: 2,
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            <Avatar alt={row.name} src={row.avatarUrl} />
-            {row.name}
-          </Box>
-        </TableCell>
+        <TableCell>{row.uniqueCode}</TableCell>
+        <TableCell>{row.serviceType}</TableCell>
+        <TableCell>{row.serviceCategory}</TableCell>
+        <TableCell>{row.priceCategory}</TableCell>
+        <TableCell>{row.category}</TableCell>
+        <TableCell>{row.weight} </TableCell>
+        <TableCell>{formatDate(row.dropOffDate)}</TableCell>
+        <TableCell>{formatDate(row.pickUpDate)}</TableCell>
+        <TableCell>{formatStatus(row.status)}</TableCell>
+        <TableCell>{formatCurrency(row.price)}</TableCell>
 
-        <TableCell>{row.company}</TableCell>
-
-        <TableCell>{row.role}</TableCell>
-
-        <TableCell align="center">
-          {row.isVerified ? (
-            <Iconify width={22} icon="solar:check-circle-bold" sx={{ color: 'success.main' }} />
-          ) : (
-            '-'
-          )}
-        </TableCell>
-
-        <TableCell>
-          <Label color={(row.status === 'banned' && 'error') || 'success'}>{row.status}</Label>
-        </TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenPopover}>
