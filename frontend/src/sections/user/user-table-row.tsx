@@ -13,6 +13,7 @@ import {
 
 import { Iconify } from 'src/components/iconify';
 
+import { EditUserDialog } from './update/user-update';
 import { DeleteAdminDialog } from './delete/user-delete';
 
 export type RowProps = {
@@ -43,6 +44,14 @@ export function UserTableRow({
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
   const [visiblePasswords, setVisiblePasswords] = useState<Record<string, boolean>>({});
   const [openDelete, setOpenDelete] = useState(false);
+
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+
+  const handleEditClick = () => {
+    setEditDialogOpen(true);
+    handleClosePopover();
+  };
+
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     setOpenPopover(event.currentTarget);
@@ -115,7 +124,7 @@ export function UserTableRow({
             },
           }}
         >
-          <MenuItem onClick={handleClosePopover}>
+          <MenuItem onClick={handleEditClick}>
             <Iconify icon="solar:pen-bold" />
             Edit
           </MenuItem>
@@ -128,7 +137,7 @@ export function UserTableRow({
             sx={{ color: 'error.main' }}
           >
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
+            Hapus
           </MenuItem>
         </MenuList>
       </Popover>
@@ -141,6 +150,20 @@ export function UserTableRow({
         currentUserEmail={currentUserEmail ?? ''}
         showSnackbar={showSnackbar}
       />
+
+
+      <EditUserDialog
+        open={editDialogOpen}
+        onClose={() => setEditDialogOpen(false)}
+        onSuccess={onSuccess}
+        showSnackbar={showSnackbar}
+        adminData={{
+          email: row.email,
+          name: row.name,
+          phone: row.phone,
+        }}
+      />
+
     </>
   );
 }
