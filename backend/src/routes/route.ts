@@ -32,7 +32,7 @@ router.get("/admin/getProfile",authenticateToken, getAdminProfile)
 router.get("/admin/getAllProfile", authenticateToken, getAllAdminProfile )
 
 //delete Admin
-router.delete("/admin/deleteAdmin/:id", authenticateToken, deleteAdmin )
+router.delete("/admin/deleteAdmin/:email", authenticateToken, deleteAdmin);
 
 //update Admin
 router.put("/admin/updateAdmin/:id", authenticateToken, updateAdmin )

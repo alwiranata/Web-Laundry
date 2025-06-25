@@ -7,8 +7,9 @@ import {
 	AdminLoginSchema,
 	AdminRegisterSchema,
 	AdminUpdateSchema,
+	AdminDeleteSchema,
 } from "../validators/adminValidator"
-import {string, z} from "zod"
+import {z} from "zod"
 import {AdminRequest} from "../middleware/adminRequest"
 const prisma = new PrismaClient()
 
@@ -130,7 +131,7 @@ export const getAdminProfile = async (
 
 		const adminProfile = await prisma.admin.findUnique({
 			where: {id: admin.id},
-			include :  {orders : true}
+			include: {orders: true},
 		})
 
 		if (!adminProfile) {
@@ -139,14 +140,15 @@ export const getAdminProfile = async (
 			})
 			return
 		}
-		const myPrice =  adminProfile.orders.reduce(
-			(acc,order) => acc + (order.price ?? 0) , 0
+		const myPrice = adminProfile.orders.reduce(
+			(acc, order) => acc + (order.price ?? 0),
+			0
 		)
 		res.status(200).json({
 			message: "Profil admin berhasil diambil",
 			profile: adminProfile,
-			myPrice : myPrice,
-			name: adminProfile.name
+			myPrice: myPrice,
+			name: adminProfile.name,
 		})
 	} catch (error) {
 		if (error instanceof z.ZodError) {
@@ -185,7 +187,7 @@ export const getAllAdminProfile = async (
 		res.status(200).json({
 			message: "Semua profil admin berhasil diambil",
 			profiles: allAdminProfile,
-			length : allAdminProfile.length
+			length: allAdminProfile.length,
 		})
 	} catch (error) {
 		if (error instanceof z.ZodError) {
@@ -276,60 +278,51 @@ export const updateAdmin = async (
 		})
 	}
 }
+export const deleteAdmin = async (req: AdminRequest, res: Response): Promise<void> => {
+  try {
+    const admin = req.user;
+    if (!admin) {
+      res.status(401).json({ message: "Akses ditolak, token tidak valid" });
+      return;
+    }
 
-export const deleteAdmin = async (
-	req: AdminRequest,
-	res: Response
-): Promise<void> => {
-	try {
-		const admin = req.user
-		if (!admin) {
-			res.status(401).json({
-				message: "Akser ditolak, token tidak valid",
-			})
-			return
-		}
+    const email = req.params.email; // <-- AMBIL DARI PARAMS
+	
+    if (!email) {
+      res.status(400).json({ message: "Email tidak ditemukan di parameter" });
+      return;
+    }
 
-		const {id} = req.params
-		const idAdmin = parseInt(id, 10)
+    const getAdmin = await prisma.admin.findUnique({ where: { email } });
 
-		if (isNaN(idAdmin)) {
-			res.status(400).json({
-				message: "ID admin tidak valid",
-			})
-		}
+    if (!getAdmin) {
+      res.status(404).json({ message: "Admin tidak ditemukan" });
+      return;
+    }
 
-		const getAdmin = await prisma.admin.findUnique({
-			where: {id: idAdmin},
-		})
+    if (getAdmin.email === admin.email) {
+      res.status(403).json({ message: "Tidak bisa menghapus akun Anda sendiri." });
+      return;
+    }
 
-		if (!getAdmin) {
-			res.status(404).json({
-				message: "Admin tidak ditemukan",
-			})
-			return
-		}
+    const hashOrders = await prisma.order.findFirst({
+      where: { adminId: getAdmin.id },
+    });
 
-		const deleteAdmin = await prisma.admin.delete({
-			where: {id: idAdmin},
-		})
+    if (hashOrders) {
+      res.status(403).json({
+        message: "Admin memiliki data order, tidak bisa dihapus",
+      });
+      return;
+    }
 
-		res.status(200).json({
-			message: "Admin berhasil dihapus",
-			admin: deleteAdmin,
-		})
-	} catch (error) {
-		if (error instanceof z.ZodError) {
-			res.status(400).json({
-				error: Object.fromEntries(
-					error.errors.map((err) => [err.path[0], err.message])
-				),
-			})
-			return
-		}
-		res.status(500).json({
-			message: "Terjadi kesalahan pada server",
-			error: error,
-		})
-	}
-}
+    const deleted = await prisma.admin.delete({ where: { email } });
+
+    res.status(200).json({
+      message: "Admin berhasil dihapus",
+      admin: deleted,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Terjadi kesalahan pada server", error });
+  }
+};

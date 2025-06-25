@@ -59,7 +59,8 @@ export const getAllOrder = async (req: AdminRequest, res: Response): Promise<voi
     res.status(200).json({
       message: `Daftar order berhasil diambil oleh admin: ${admin.email}`,
       allPrices : allPrices,
-      orders : orders.length 
+      orders : orders.length,
+      data :orders
     });
 
   } catch (error) {
