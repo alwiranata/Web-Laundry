@@ -1,16 +1,19 @@
 import { useState, useCallback } from 'react';
 
-import Popover from '@mui/material/Popover';
-import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
-import MenuList from '@mui/material/MenuList';
-import TableCell from '@mui/material/TableCell';
-import IconButton from '@mui/material/IconButton';
-import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
+import {
+  Popover,
+  TableRow,
+  Checkbox,
+  MenuList,
+  MenuItem,
+  TableCell,
+  IconButton,
+  menuItemClasses,
+} from '@mui/material';
 
 import { Iconify } from 'src/components/iconify';
 
-// ----------------------------------------------------------------------
+import { DeleteAdminDialog } from './delete/user-delete';
 
 export type RowProps = {
   id: string;
@@ -24,11 +27,22 @@ type UserTableRowProps = {
   row: RowProps;
   selected: boolean;
   onSelectRow: () => void;
+  onSuccess: () => void;
+  currentUserEmail?: string;
+  showSnackbar: (message: string, severity: 'success' | 'error' | 'warning') => void;
 };
 
-export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) {
+export function UserTableRow({
+  row,
+  selected,
+  onSelectRow,
+  onSuccess,
+  currentUserEmail,
+  showSnackbar,
+}: UserTableRowProps) {
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
   const [visiblePasswords, setVisiblePasswords] = useState<Record<string, boolean>>({});
+  const [openDelete, setOpenDelete] = useState(false);
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     setOpenPopover(event.currentTarget);
@@ -60,7 +74,6 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
           {visiblePasswords[row.id]
             ? row.password.slice(0, 9)
             : '•'.repeat(Math.min(9, row.password.length))}
-
           <IconButton
             size="small"
             onClick={() => handleTogglePassword(row.id)}
@@ -107,12 +120,27 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
             Edit
           </MenuItem>
 
-          <MenuItem onClick={handleClosePopover} sx={{ color: 'error.main' }}>
+          <MenuItem
+            onClick={() => {
+              handleClosePopover();
+              setOpenDelete(true);
+            }}
+            sx={{ color: 'error.main' }}
+          >
             <Iconify icon="solar:trash-bin-trash-bold" />
             Delete
           </MenuItem>
         </MenuList>
       </Popover>
+
+      <DeleteAdminDialog
+        open={openDelete}
+        onClose={() => setOpenDelete(false)}
+        email={row.email}
+        onSuccess={onSuccess}
+        currentUserEmail={currentUserEmail ?? ''}
+        showSnackbar={showSnackbar}
+      />
     </>
   );
 }

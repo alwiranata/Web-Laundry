@@ -1,34 +1,32 @@
 import axios from 'axios';
-// External libraries
 import { useState, useEffect, useCallback } from 'react';
 
-// Third-party components
 import {
   Box,
   Card,
   Table,
+  Alert,
   Button,
+  Snackbar,
   TableBody,
   Typography,
   TableContainer,
   TablePagination,
 } from '@mui/material';
 
-// Project alias imports
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 
-// Relative imports
 import { TableNoData } from '../table-no-data';
 import { UserTableRow } from '../user-table-row';
 import { UserTableHead } from '../user-table-head';
 import { TableEmptyRows } from '../table-empty-rows';
+import { NewUserDialog } from '../create/user-create';
 import { UserTableToolbar } from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
-// Types
 interface Admin {
   id: number;
   name: string;
@@ -45,7 +43,6 @@ interface RowProps {
   password: string;
 }
 
-// Table state hook
 function useTable() {
   const [page, setPage] = useState(0);
   const [orderBy, setOrderBy] = useState('name');
@@ -91,40 +88,67 @@ function useTable() {
   };
 }
 
-// ----------------------------------------------------------------------
-
 export function UserView() {
   const table = useTable();
   const [admins, setAdmins] = useState<RowProps[]>([]);
   const [filterName, setFilterName] = useState('');
   const [loading, setLoading] = useState(true);
+  const [openDialog, setOpenDialog] = useState(false);
+
+  // Ambil email user dari token
+  let currentUserEmail = '';
+  const token = localStorage.getItem('token');
+  if (token) {
+    try {
+      const base64Payload = token.split('.')[1];
+      const decodedPayload = JSON.parse(atob(base64Payload));
+      currentUserEmail = decodedPayload.email;
+    } catch (error) {
+      console.error('Gagal decode token:', error);
+    }
+  }
+
+  // Snackbar global
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success' as 'success' | 'error' | 'warning',
+  });
+
+  const showSnackbar = (message: string, severity: 'success' | 'error' | 'warning') => {
+    setSnackbar({ open: true, message, severity });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
+
+  const fetchAdmins = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get('http://localhost:3000/api/admin/getAllProfile', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const mapped = res.data.profiles.map((admin: Admin) => ({
+        id: admin.id.toString(),
+        name: admin.name,
+        email: admin.email,
+        phone: admin.phone,
+        password: admin.password,
+      }));
+
+      setAdmins(mapped);
+    } catch (err) {
+      console.error('Gagal mengambil data admin:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
 
   useEffect(() => {
-    const fetchAdmins = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:3000/api/admin/getAllProfile', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const mapped = res.data.profiles.map((admin: Admin) => ({
-          id: admin.id.toString(),
-          name: admin.name,
-          email: admin.email,
-          phone: admin.phone,
-          password: admin.password,
-        }));
-
-        setAdmins(mapped);
-      } catch (err) {
-        console.error('Gagal mengambil data admin:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchAdmins();
-  }, []);
+  }, [fetchAdmins]);
 
   const dataFiltered = applyFilter({
     inputData: admins,
@@ -141,10 +165,21 @@ export function UserView() {
           Admin
         </Typography>
 
-        <Button variant="contained" color="inherit" startIcon={<Iconify icon="mingcute:add-line" />}>
+        <Button
+          variant="contained"
+          color="inherit"
+          startIcon={<Iconify icon="mingcute:add-line" />}
+          onClick={() => setOpenDialog(true)}
+        >
           New Admin
         </Button>
       </Box>
+
+      <NewUserDialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        onSuccess={fetchAdmins}
+      />
 
       <Card>
         <UserTableToolbar
@@ -173,8 +208,7 @@ export function UserView() {
                   { id: 'email', label: 'Email' },
                   { id: 'phone', label: 'Phone' },
                   { id: 'password', label: 'Password' },
-                  { id: '' },
-
+                  { id: '', label: '' },
                 ]}
               />
 
@@ -190,6 +224,9 @@ export function UserView() {
                       row={row}
                       selected={table.selected.includes(row.id)}
                       onSelectRow={() => table.onSelectRow(row.id)}
+                      onSuccess={fetchAdmins}
+                      currentUserEmail={currentUserEmail}
+                      showSnackbar={showSnackbar}
                     />
                   ))}
 
@@ -214,6 +251,21 @@ export function UserView() {
           onRowsPerPageChange={table.onChangeRowsPerPage}
         />
       </Card>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </DashboardContent>
   );
 }

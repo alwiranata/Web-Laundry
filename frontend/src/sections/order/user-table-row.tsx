@@ -57,7 +57,7 @@ function formatStatus(status: string) {
 }
 
 function formatCurrency(value: number) {
-  return `Rp ${value.toLocaleString('id-ID')}`;
+  return `${value.toLocaleString('id-ID')}`;
 }
 
 
@@ -90,7 +90,7 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
         <TableCell>{row.uniqueCode}</TableCell>
         <TableCell>{row.serviceType}</TableCell>
         <TableCell>{row.serviceCategory}</TableCell>
-        <TableCell>{row.priceCategory}</TableCell>
+        <TableCell>{formatCurrency(row.priceCategory)}</TableCell>
         <TableCell>{row.category}</TableCell>
         <TableCell>{row.weight} </TableCell>
         <TableCell>{formatDate(row.dropOffDate)}</TableCell>

@@ -170,11 +170,11 @@ export function OrderView() {
                   { id: 'serviceCategory', label: 'Kategori' },
                   { id: 'priceCategory', label: 'Harga (Kategori)' },
                   { id: 'category', label: 'Jenis' },
-                  { id: 'weight', label: 'Berat (Kg)' },
+                  { id: 'weight', label: 'Berat(Kg)' },
                   { id: 'pickUpDate', label: 'Antar' },
                   { id: 'pickOffDate', label: 'Ambil' },
                   { id: 'status', label: 'Status' },
-                  { id: 'price', label: 'Total' },
+                  { id: 'price', label: 'Total(Rp)' },
                   { id : ""}
                 ]}
               />
