@@ -382,7 +382,7 @@ export const deleteAllAdmin = async (req : AdminRequest , res : Response): Promi
 
 		if(adminsToDelete.length === 0){
 			res.status(400).json({
-				message :           "Tidak ada admin yang bisa dihapus (semua adalah Anda sendiri atau punya order).",
+				message :   "Admin memiliki data order dan tidak bisa menghapus akun sendiri",
 			})
 			return
 		}
