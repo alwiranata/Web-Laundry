@@ -87,6 +87,7 @@ function useTable() {
     onResetPage,
   };
 }
+// ... (import dan deklarasi sebelumnya tetap)
 
 export function UserView() {
   const table = useTable();
@@ -95,7 +96,6 @@ export function UserView() {
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
 
-  // Ambil email user dari token
   let currentUserEmail = '';
   const token = localStorage.getItem('token');
   if (token) {
@@ -108,7 +108,6 @@ export function UserView() {
     }
   }
 
-  // Snackbar global
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
@@ -150,6 +149,11 @@ export function UserView() {
     fetchAdmins();
   }, [fetchAdmins]);
 
+  // ✅ RESET SELECTED CHECKBOX
+  const resetSelection = () => {
+    table.onSelectAllRows(false, []);
+  };
+
   const dataFiltered = applyFilter({
     inputData: admins,
     comparator: getComparator(table.order, table.orderBy),
@@ -185,9 +189,14 @@ export function UserView() {
         <UserTableToolbar
           numSelected={table.selected.length}
           filterName={filterName}
-          onFilterName={(event: React.ChangeEvent<HTMLInputElement>) => {
-            setFilterName(event.target.value);
+          onFilterName={(e) => {
+            setFilterName(e.target.value);
             table.onResetPage();
+          }}
+          showSnackbar={showSnackbar}
+          onSuccess={() => {
+            fetchAdmins();
+            resetSelection(); // ✅ reset checkbox
           }}
         />
 
@@ -210,6 +219,7 @@ export function UserView() {
                   { id: 'password', label: 'Password' },
                   { id: '', label: '' },
                 ]}
+                showSnackbar={showSnackbar}
               />
 
               <TableBody>
