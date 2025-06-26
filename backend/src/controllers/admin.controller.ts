@@ -206,78 +206,90 @@ export const getAllAdminProfile = async (
 	}
 }
 
-export const updateAdmin = async (
-	req: AdminRequest,
-	res: Response
+export const updateAdmin= async (
+  req: AdminRequest,
+  res: Response
 ): Promise<void> => {
-	try {
-		const admin = req.user
-		if (!admin) {
-			res.status(401).json({
-				message: "Akses ditolak, token tidak valid",
-			})
-			return
-		}
-		const {id} = req.params
-		const idAdmin = parseInt(id, 10)
+  try {
+    const admin = req.user;
+    if (!admin) {
+      res.status(401).json({
+        message: "Akses ditolak, token tidak valid",
+      });
+      return;
+    }
 
-		if (isNaN(idAdmin)) {
-			res.status(400).json({
-				message: "ID admin tidak valid",
-			})
-			return
-		}
+    const { email } = req.params;
 
-		const getAdmin = await prisma.admin.findUnique({
-			where: {id: idAdmin},
-		})
+    if (!email) {
+      res.status(400).json({
+        message: "Email tidak valid",
+      });
+      return;
+    }
 
-		if (!getAdmin) {
-			res.status(404).json({
-				message: "Admin tidak ditemukan",
-			})
-			return
-		}
+    const existingAdmin = await prisma.admin.findUnique({
+      where: { email },
+    });
 
-		const input = AdminUpdateSchema.parse(req.body)
+    if (!existingAdmin) {
+      res.status(404).json({
+        message: "Admin tidak ditemukan",
+      });
+      return;
+    }
 
-		if (idAdmin === req.user?.id && ("email" in input || "password" in input)) {
-			res.status(400).json({
-				message:
-					"Anda tidak dapat mengubah email dan password anda sendiri ketika sedang login",
-			})
-			return
-		}
+    const input = AdminUpdateSchema.parse(req.body);
 
-		if (input.password) {
-			const hashedPassword = await bcrypt.hash(input.password, 10)
-			input.password = hashedPassword
-		}
+    // Cegah update email/password diri sendiri saat login
+    if (
+      email === req.user?.email &&
+      ("email" in input || "password" in input)
+    ) {
+      res.status(400).json({
+        message:
+          "Tidak dapat mengubah email atau password akun Anda sendiri saat login.",
+      });
+      return;
+    }
 
-		const updateAdmin = await prisma.admin.update({
-			where: {id: idAdmin},
-			data: input,
-		})
+    if (input.password) {
+      input.password = await bcrypt.hash(input.password, 10);
+    }
 
-		res.status(200).json({
-			message: "Data admin berhasil diperbarui",
-			data: updateAdmin,
-		})
-	} catch (error) {
-		if (error instanceof z.ZodError) {
-			res.status(400).json({
-				error: Object.fromEntries(
-					error.errors.map((err) => [err.path[0], err.message])
-				),
-			})
-			return
-		}
-		res.status(500).json({
-			message: "Terjadi kesalahan pada server",
-			error: error,
-		})
-	}
-}
+    const updatedAdmin = await prisma.admin.update({
+      where: { email },
+      data: input,
+    });
+
+    res.status(200).json({
+      message: "Admin berhasil diperbarui berdasarkan email",
+      data: {
+        id: updatedAdmin.id,
+        name: updatedAdmin.name,
+        email: updatedAdmin.email,
+        phone: updatedAdmin.phone,
+      },
+    });
+	
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({
+        errors: Object.fromEntries(
+          error.errors.map((err) => [err.path[0], err.message])
+        ),
+      });
+      return;
+    }
+
+    res.status(500).json({
+      message: "Terjadi kesalahan pada server",
+      error,
+    });
+  }
+};
+
+
 export const deleteAdmin = async (req: AdminRequest, res: Response): Promise<void> => {
   try {
     const admin = req.user;
@@ -323,6 +335,82 @@ export const deleteAdmin = async (req: AdminRequest, res: Response): Promise<voi
       admin: deleted,
     });
   } catch (error) {
-    res.status(500).json({ message: "Terjadi kesalahan pada server", error });
+     if (error instanceof z.ZodError) {
+      res.status(400).json({
+        errors: Object.fromEntries(
+          error.errors.map((err) => [err.path[0], err.message])
+        ),
+      });
+      return;
+    }
+
+    res.status(500).json({
+      message: "Terjadi kesalahan pada server",
+      error,
+    });
   }
 };
+
+export const deleteAllAdmin = async (req : AdminRequest , res : Response): Promise<void> => {
+	try {
+		const admin = req.user
+
+		if(!admin){
+			res.status(401).json({
+				message : "Akses ditolak , token tidak valid"
+			})
+			return
+		}
+
+		//ambil semua admin
+		 
+		const allAdmins = await prisma.admin.findMany()
+
+		const  adminsToDelete : string[] = []
+
+		for (const a of allAdmins){
+			if(a.email === admin.email) continue
+
+			const hasOrder = await prisma.order.findFirst({
+				where: {adminId: a.id}
+			})
+
+			if(!hasOrder) {
+				adminsToDelete.push(a.email)
+			}
+		}
+
+		if(adminsToDelete.length === 0){
+			res.status(400).json({
+				message :           "Tidak ada admin yang bisa dihapus (semua adalah Anda sendiri atau punya order).",
+			})
+			return
+		}
+
+		const deleted = await prisma.admin.deleteMany({
+			where : {email :{
+				in : adminsToDelete
+			}}
+		})
+
+		res.status(200).json({
+			message : `Berhasil menghapus ${deleted.count} admin.`,
+			emails : adminsToDelete
+		})
+
+	} catch (error) {
+		 if (error instanceof z.ZodError) {
+      res.status(400).json({
+        errors: Object.fromEntries(
+          error.errors.map((err) => [err.path[0], err.message])
+        ),
+      });
+      return;
+    }
+
+    res.status(500).json({
+      message: "Terjadi kesalahan pada server",
+      error,
+    });
+	}
+}
