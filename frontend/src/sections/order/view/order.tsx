@@ -21,6 +21,7 @@ import { TableNoData } from '../table-no-data';
 import { UserTableRow } from '../user-table-row';
 import { UserTableHead } from '../user-table-head';
 import { TableEmptyRows } from '../table-empty-rows';
+import { NewOrderDialog } from '../create/order-create';
 import { UserTableToolbar } from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
@@ -33,7 +34,7 @@ export type RowProps = {
   category: string;
   weight: number;
   pickUpDate: string;
-  dropOffDate:string
+  dropOffDate: string;
   status: string;
   price: number;
 };
@@ -88,37 +89,38 @@ export function OrderView() {
   const [orders, setOrders] = useState<RowProps[]>([]);
   const [filterName, setFilterName] = useState('');
   const [loading, setLoading] = useState(true);
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const fetchOrders = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get('http://localhost:3000/api/order/getAll', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const mapped: RowProps[] = res.data.data.map((order: any) => ({
+        id: order.id,
+        uniqueCode: order.uniqueCode,
+        serviceType: order.serviceType,
+        serviceCategory: order.serviceCategory,
+        priceCategory: order.priceCategory,
+        category: order.category,
+        weight: order.weight,
+        pickUpDate: order.pickUpDate,
+        dropOffDate: order.dropOffDate,
+        status: order.status,
+        price: order.price,
+      }));
+
+      setOrders(mapped);
+    } catch (error) {
+      console.error('Gagal mengambil data orders:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:3000/api/order/getAll', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const mapped: RowProps[] = res.data.data.map((order: any) => ({
-          id: order.id,
-          uniqueCode: order.uniqueCode,
-          serviceType: order.serviceType,
-          serviceCategory: order.serviceCategory,
-          priceCategory: order.priceCategory,
-          category: order.category,
-          weight: order.weight,
-          pickUpDate: order.pickUpDate,
-          dropOffDate :order.dropOffDate,
-          status: order.status,
-          price: order.price,
-          createdAt: order.createdAt,
-        }));
-
-        setOrders(mapped);
-      } catch (error) {
-        console.error('Gagal mengambil data orders:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchOrders();
   }, []);
 
@@ -137,7 +139,12 @@ export function OrderView() {
           Order
         </Typography>
 
-        <Button variant="contained" color="inherit" startIcon={<Iconify icon="mingcute:add-line" />}>
+        <Button
+          variant="contained"
+          color="inherit"
+          startIcon={<Iconify icon="mingcute:add-line" />}
+          onClick={() => setOpenDialog(true)}
+        >
           New Order
         </Button>
       </Box>
@@ -175,7 +182,7 @@ export function OrderView() {
                   { id: 'pickOffDate', label: 'Ambil' },
                   { id: 'status', label: 'Status' },
                   { id: 'price', label: 'Total(Rp)' },
-                  { id : ""}
+                  { id: '', label: '' },
                 ]}
               />
 
@@ -215,6 +222,16 @@ export function OrderView() {
           onRowsPerPageChange={table.onChangeRowsPerPage}
         />
       </Card>
+
+      {/* Dialog Tambah Order */}
+      <NewOrderDialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        onSuccess={() => {
+          setOpenDialog(false);
+          fetchOrders();
+        }}
+      />
     </DashboardContent>
   );
 }
