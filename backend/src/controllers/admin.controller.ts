@@ -92,7 +92,6 @@ export const loginAdmin = async (
 			expiresIn: "1d",
 		})
 
-		const {password, ...adminWithoutPassword} = admin
 		res.status(200).json({
 			message: "Login Berhasil",
 			token: token,
@@ -361,8 +360,6 @@ export const deleteAllAdmin = async (req : AdminRequest , res : Response): Promi
 			})
 			return
 		}
-
-		//ambil semua admin
 		 
 		const allAdmins = await prisma.admin.findMany()
 
