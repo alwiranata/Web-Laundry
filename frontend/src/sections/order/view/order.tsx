@@ -5,7 +5,9 @@ import {
   Box,
   Card,
   Table,
+  Alert,
   Button,
+  Snackbar,
   TableBody,
   Typography,
   TableContainer,
@@ -18,11 +20,11 @@ import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 
 import { TableNoData } from '../table-no-data';
-import { UserTableRow } from '../user-table-row';
+import { OrderTableRow } from '../user-table-row';
 import { UserTableHead } from '../user-table-head';
 import { TableEmptyRows } from '../table-empty-rows';
 import { NewOrderDialog } from '../create/order-create';
-import { UserTableToolbar } from '../user-table-toolbar';
+import { OrderTableToolbar } from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
 export type RowProps = {
@@ -91,6 +93,20 @@ export function OrderView() {
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
 
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success' as 'success' | 'error' | 'warning',
+  });
+
+  const showSnackbar = (message: string, severity: 'success' | 'error' | 'warning') => {
+    setSnackbar({ open: true, message, severity });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
+
   const fetchOrders = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -150,14 +166,20 @@ export function OrderView() {
       </Box>
 
       <Card>
-        <UserTableToolbar
+        <OrderTableToolbar
           numSelected={table.selected.length}
           filterName={filterName}
-          onFilterName={(event: React.ChangeEvent<HTMLInputElement>) => {
+          onFilterName={(event) => {
             setFilterName(event.target.value);
             table.onResetPage();
           }}
+          showSnackbar={showSnackbar}
+          onSuccess={() => {
+            fetchOrders();
+            table.onSelectAllRows(false, []);
+          }}
         />
+
 
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
@@ -193,11 +215,13 @@ export function OrderView() {
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
-                    <UserTableRow
+                    <OrderTableRow
                       key={row.id}
                       row={row}
                       selected={table.selected.includes(row.uniqueCode)}
                       onSelectRow={() => table.onSelectRow(row.uniqueCode)}
+                      onSuccess={fetchOrders}
+                      showSnackbar={showSnackbar}
                     />
                   ))}
 
@@ -232,6 +256,18 @@ export function OrderView() {
           fetchOrders();
         }}
       />
+
+      {/* Snackbar Notifikasi */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity={snackbar.severity} onClose={handleCloseSnackbar}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </DashboardContent>
   );
 }

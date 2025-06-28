@@ -1,17 +1,22 @@
 import { useState, useCallback } from 'react';
 
-import Popover from '@mui/material/Popover';
-import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
-import MenuList from '@mui/material/MenuList';
-import TableCell from '@mui/material/TableCell';
-import IconButton from '@mui/material/IconButton';
-import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
+import {
+  Chip,
+  Popover,
+  TableRow,
+  Checkbox,
+  MenuList,
+  MenuItem,
+  TableCell,
+  IconButton,
+  menuItemClasses,
+} from '@mui/material';
 
 import { Iconify } from 'src/components/iconify';
 
-// ----------------------------------------------------------------------
-// Di user-table-row.tsx (contoh lengkap RowProps yang diperlukan)
+import { EditOrderDialog } from './update/order-update';
+import { DeleteOrderDialog } from './delete/order-delete';
+ // pastikan path sesuai
 export type RowProps = {
   id: number;
   uniqueCode: string;
@@ -26,11 +31,12 @@ export type RowProps = {
   price: number;
 };
 
-
-type UserTableRowProps = {
+type OrderTableRowProps = {
   row: RowProps;
   selected: boolean;
   onSelectRow: () => void;
+  onSuccess: () => void;
+  showSnackbar: (message: string, severity: 'success' | 'error' | 'warning') => void;
 };
 
 function formatDate(date: string) {
@@ -44,13 +50,13 @@ function formatDate(date: string) {
 function formatStatus(status: string) {
   switch (status) {
     case 'PENDING':
-      return 'Pending';
+      return <Chip label = "Tunda" color='warning' variant='outlined'/>;
     case 'IN_PROGRESS':
-      return 'Sedang Dikerjakan';
+      return <Chip label = "Proses" color='info' variant='outlined'/>;
     case 'COMPLETED':
-      return 'Selesai';
+      return <Chip label = "Selesai" color='success' variant='outlined'/>;
     case 'CANCELLED':
-      return 'Dibatalkan';
+      return <Chip label = "Batal" color='error' variant='outlined'/>;
     default:
       return status;
   }
@@ -60,10 +66,16 @@ function formatCurrency(value: number) {
   return `${value.toLocaleString('id-ID')}`;
 }
 
-
-export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) {
-  const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
-  const [visiblePasswords, setVisiblePasswords] = useState<Record<string, boolean>>({});
+export function OrderTableRow({
+  row,
+  selected,
+  onSelectRow,
+  onSuccess,
+  showSnackbar,
+}: OrderTableRowProps) {
+  const [openPopover, setOpenPopover] = useState<null | HTMLElement>(null);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     setOpenPopover(event.currentTarget);
@@ -72,13 +84,6 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
   const handleClosePopover = useCallback(() => {
     setOpenPopover(null);
   }, []);
-
-  const handleTogglePassword = (userId: string) => {
-    setVisiblePasswords((prev) => ({
-      ...prev,
-      [userId]: !prev[userId],
-    }));
-  };
 
   return (
     <>
@@ -92,12 +97,11 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
         <TableCell>{row.serviceCategory}</TableCell>
         <TableCell>{formatCurrency(row.priceCategory)}</TableCell>
         <TableCell>{row.category}</TableCell>
-        <TableCell>{row.weight} </TableCell>
+        <TableCell>{row.weight}</TableCell>
         <TableCell>{formatDate(row.dropOffDate)}</TableCell>
         <TableCell>{formatDate(row.pickUpDate)}</TableCell>
         <TableCell>{formatStatus(row.status)}</TableCell>
         <TableCell>{formatCurrency(row.price)}</TableCell>
-
 
         <TableCell align="right">
           <IconButton onClick={handleOpenPopover}>
@@ -129,17 +133,47 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
             },
           }}
         >
-          <MenuItem onClick={handleClosePopover}>
+          <MenuItem
+            onClick={() => {
+              setOpenEditDialog(true);
+              handleClosePopover();
+            }}
+          >
             <Iconify icon="solar:pen-bold" />
             Edit
           </MenuItem>
 
-          <MenuItem onClick={handleClosePopover} sx={{ color: 'error.main' }}>
+          <MenuItem
+            onClick={() => {
+              setOpenDeleteDialog(true);
+              handleClosePopover();
+            }}
+            sx={{ color: 'error.main' }}
+          >
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
+            Hapus
           </MenuItem>
         </MenuList>
       </Popover>
+
+      <DeleteOrderDialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        uniqueCode={row.uniqueCode}
+        onSuccess={onSuccess}
+        showSnackbar={showSnackbar}
+      />
+
+
+      <EditOrderDialog
+        open={openEditDialog}
+        onClose={() => setOpenEditDialog(false)}
+        onSuccess={onSuccess}
+        showSnackbar={showSnackbar}
+        rowData={row}
+      />
+
+
     </>
   );
 }

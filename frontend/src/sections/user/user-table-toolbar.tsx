@@ -51,7 +51,7 @@ export function UserTableToolbar({
             fullWidth
             value={filterName}
             onChange={onFilterName}
-            placeholder="Search user..."
+            placeholder="Search Email..."
             startAdornment={
               <InputAdornment position="start">
                 <Iconify width={20} icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
