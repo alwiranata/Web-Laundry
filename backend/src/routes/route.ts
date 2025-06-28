@@ -6,7 +6,7 @@ import {
     getAllAdminProfile,
     deleteAdmin,
     updateAdmin,
-    deleteAllAdmin
+    deleteAllAdmin,
 } from '../controllers/admin.controller';
 import authenticateToken from '../middleware/authenticateToken';
 import { 
@@ -15,6 +15,7 @@ import {
     getAllOrder,
     updateOrder,
     deleteOrder,
+    deleteAllOrder
 
  } from '../controllers/order.Controller';
 import { verify } from 'crypto';
@@ -36,7 +37,7 @@ router.get("/admin/getAllProfile", authenticateToken, getAllAdminProfile )
 //delete Admin
 router.delete("/admin/deleteAdmin/:email", authenticateToken, deleteAdmin);
 
-//delete ALLAdmin
+//delete AllAdmin
 router.delete('/admin/deleteAllAdmin',authenticateToken, deleteAllAdmin)
 
 //update Admin
@@ -52,11 +53,13 @@ router.get("/order/getAll", authenticateToken, getAllOrder)
 router.get('/order/get/:uniqueCode', getOrderForUser)
 
 //update Order
-router.put('/order/update/:id', authenticateToken, updateOrder)
+router.put('/order/update/:uniqueCode', authenticateToken, updateOrder)
 
 //delete Order
-router.delete('/order/delete/:id', authenticateToken, deleteOrder)
+router.delete('/order/delete/:uniqueCode', authenticateToken, deleteOrder)
 
+//delete AllOrder
+router.delete('/order/deleteAllOrder', authenticateToken ,deleteAllOrder)
 
 
 export default router;

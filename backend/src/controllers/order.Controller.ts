@@ -147,10 +147,9 @@ export const updateOrder = async(req : AdminRequest ,res : Response) =>{
       return
     }
 
-    const {id} = req.params
-    const idOrder = parseInt(id,10)
+    const { uniqueCode } = req.params
 
-    if(isNaN(idOrder)) {
+    if(!uniqueCode) {
       res.status(400).json({
         message : "ID order tidak ditemukan"
       })
@@ -164,7 +163,7 @@ export const updateOrder = async(req : AdminRequest ,res : Response) =>{
     const price = (input.priceCategory !== 0 && input.weight !== 0) ? priceCategory * weight : input.price
 
     const existingOrder = await  prisma.order.findUnique({
-      where : {id : idOrder}
+      where : {uniqueCode : uniqueCode}
     })
 
     if(!existingOrder){
@@ -175,7 +174,7 @@ export const updateOrder = async(req : AdminRequest ,res : Response) =>{
     }
 
     const updateOrder  = await prisma.order.update({
-      where : {id : idOrder},
+      where : {uniqueCode : uniqueCode},
       data :{
         ...input,
         price
@@ -214,19 +213,17 @@ export const deleteOrder  = async(req : AdminRequest , res : Response) =>{
       return
     }
 
-    const {id} = req.params
-    const idOrder = parseInt(id, 10)
+    const {uniqueCode} = req.params
 
-    if(isNaN(idOrder)){
+    if(!uniqueCode){
       res.status(400).json({
-        message : "ID order tidak ditemukan"
+        message : "Kode unik tidak ditemukan"
       })
       return
     }
 
-
     const existingOrder =  await prisma.order.findUnique({
-      where : {id : idOrder}
+      where : {uniqueCode : uniqueCode}
     })
 
     if(!existingOrder){
@@ -236,8 +233,15 @@ export const deleteOrder  = async(req : AdminRequest , res : Response) =>{
       return
     }
 
+    if(existingOrder.adminId  !== admin.id){
+      res.status(403).json({
+        message : "Tidak bisa menghapus order milik Admin lain"
+      })
+      return
+    }
+
     const deletedOrder = await prisma.order.delete({
-      where : {id : idOrder}
+      where : {uniqueCode : uniqueCode}
     })
 
     res.status(200).json({
@@ -262,3 +266,51 @@ export const deleteOrder  = async(req : AdminRequest , res : Response) =>{
 }
 
 
+
+export const deleteAllOrder = async (req : AdminRequest , res : Response): Promise<void> => {
+  try {
+    const admin = req.user
+
+    if(!admin){
+      res.status(401).json({
+        message : "Akses ditolak , token tidak valid"
+      })
+      return
+    }
+     
+    const orders = await  prisma.order.findMany({
+      where : {adminId : admin.id }
+    })
+
+    if(orders.length === 0){
+      res.status(400).json({
+        message : "Kamu tidak memiliki order yang bisa dihapus."
+      })
+      return
+    }
+
+    const  deleted = await prisma.order.deleteMany({
+      where : {adminId : admin.id}
+    })
+ 
+
+    res.status(200).json({
+      message: `Berhasil menghapus ${deleted.count} order milik Anda.`,
+    });
+
+  } catch (error) {
+     if (error instanceof z.ZodError) {
+      res.status(400).json({
+        errors: Object.fromEntries(
+          error.errors.map((err) => [err.path[0], err.message])
+        ),
+      });
+      return;
+    }
+
+    res.status(500).json({
+      message: "Terjadi kesalahan pada server",
+      error,
+    });
+  }
+}
