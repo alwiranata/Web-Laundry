@@ -39,6 +39,10 @@ export type RowProps = {
   dropOffDate: string;
   status: string;
   price: number;
+  admin: {
+    email: string;
+    name : string
+  };
 };
 
 function useTable() {
@@ -126,6 +130,11 @@ export function OrderView() {
         dropOffDate: order.dropOffDate,
         status: order.status,
         price: order.price,
+        admin: {
+          email: order.admin?.email || '-', 
+          name: order.admin?.name || '-', // Tambahkan ini
+// Tambahkan ini
+        },
       }));
 
       setOrders(mapped);

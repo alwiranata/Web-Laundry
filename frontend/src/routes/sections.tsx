@@ -9,14 +9,14 @@ import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgr
 
 import { AuthLayout } from 'src/layouts/auth';
 import { DashboardLayout } from 'src/layouts/dashboard';
- 
-// ----------------------------------------------------------------------
+
+import { PrivateRoute } from './private/PrivateRoute';
 
 export const DashboardPage = lazy(() => import('src/pages/dashboard'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const Register = lazy(() => import('src/pages/register'));
-export const OrderPage = lazy(() => import('src/pages/order'))
+export const OrderPage = lazy(() => import('src/pages/order'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 const renderFallback = () => (
@@ -49,13 +49,33 @@ export const routesSection: RouteObject[] = [
       </DashboardLayout>
     ),
     children: [
-      { path: 'dashboard', element: <DashboardPage /> },
-      { path: 'user', element: <UserPage /> },
-      { path: 'order', element : <OrderPage/>}
-
+      {
+        path: 'dashboard',
+        element: (
+          <PrivateRoute>
+            <DashboardPage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: 'user',
+        element: (
+          <PrivateRoute>
+            <UserPage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: 'order',
+        element: (
+          <PrivateRoute>
+            <OrderPage />
+          </PrivateRoute>
+        ),
+      },
     ],
   },
-   {
+  {
     index: true,
     element: (
       <AuthLayout>
@@ -75,5 +95,8 @@ export const routesSection: RouteObject[] = [
     path: '404',
     element: <Page404 />,
   },
-  { path: '*', element: <Page404 /> },
+  {
+    path: '*',
+    element: <Page404 />,
+  },
 ];

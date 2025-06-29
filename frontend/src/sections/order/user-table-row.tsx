@@ -16,7 +16,8 @@ import { Iconify } from 'src/components/iconify';
 
 import { EditOrderDialog } from './update/order-update';
 import { DeleteOrderDialog } from './delete/order-delete';
- // pastikan path sesuai
+import { OrderDetailDialog } from './detail/order-detail';
+// pastikan path sesuai
 export type RowProps = {
   id: number;
   uniqueCode: string;
@@ -29,6 +30,10 @@ export type RowProps = {
   dropOffDate: string;
   status: string;
   price: number;
+  admin: {
+    email: string;
+    name : string
+  };
 };
 
 type OrderTableRowProps = {
@@ -50,13 +55,13 @@ function formatDate(date: string) {
 function formatStatus(status: string) {
   switch (status) {
     case 'PENDING':
-      return <Chip label = "Tunda" color='warning' variant='outlined'/>;
+      return <Chip label="Tunda" color='warning' variant='outlined' />;
     case 'IN_PROGRESS':
-      return <Chip label = "Proses" color='info' variant='outlined'/>;
+      return <Chip label="Proses" color='info' variant='outlined' />;
     case 'COMPLETED':
-      return <Chip label = "Selesai" color='success' variant='outlined'/>;
+      return <Chip label="Selesai" color='success' variant='outlined' />;
     case 'CANCELLED':
-      return <Chip label = "Batal" color='error' variant='outlined'/>;
+      return <Chip label="Batal" color='error' variant='outlined' />;
     default:
       return status;
   }
@@ -76,6 +81,7 @@ export function OrderTableRow({
   const [openPopover, setOpenPopover] = useState<null | HTMLElement>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [openDetailDialog, setOpenDetailDialog] = useState(false);
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     setOpenPopover(event.currentTarget);
@@ -135,9 +141,18 @@ export function OrderTableRow({
         >
           <MenuItem
             onClick={() => {
+              setOpenDetailDialog(true);
+              handleClosePopover();
+            }}>
+            <Iconify icon="solar:settings-bold-duotone" />
+            Detail
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
               setOpenEditDialog(true);
               handleClosePopover();
             }}
+            sx={{ color: "info.main" }}
           >
             <Iconify icon="solar:pen-bold" />
             Edit
@@ -173,6 +188,12 @@ export function OrderTableRow({
         rowData={row}
       />
 
+      <OrderDetailDialog
+        open={openDetailDialog}
+        onClose={() => setOpenDetailDialog(false)}
+        email={row.admin?.email ?? '-'}
+        name={row.admin?.name ?? '-'}
+      />
 
     </>
   );

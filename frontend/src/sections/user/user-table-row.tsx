@@ -124,7 +124,7 @@ export function UserTableRow({
             },
           }}
         >
-          <MenuItem onClick={handleEditClick}>
+          <MenuItem onClick={handleEditClick} sx={{color : "info.main"}}>
             <Iconify icon="solar:pen-bold" />
             Edit
           </MenuItem>
