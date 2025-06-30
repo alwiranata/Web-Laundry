@@ -1,10 +1,10 @@
 import { OrderView } from 'src/sections/order/view';
 
-export default function Page(){
-    return(
+export default function Page() {
+    return (
         <>
-      <title>Order</title>
-            <OrderView/>
+            <title>Order</title>
+            <OrderView />
         </>
     )
 }

@@ -13,6 +13,7 @@ import { DashboardLayout } from 'src/layouts/dashboard';
 import { PrivateRoute } from './private/PrivateRoute';
 
 export const DashboardPage = lazy(() => import('src/pages/dashboard'));
+export const Profile = lazy(() => import('src/pages/profile'))
 export const UserPage = lazy(() => import('src/pages/user'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const Register = lazy(() => import('src/pages/register'));
@@ -88,6 +89,14 @@ export const routesSection: RouteObject[] = [
     element: (
       <AuthLayout>
         <SignInPage />
+      </AuthLayout>
+    ),
+  },
+   {
+    path: 'profile',
+    element: (
+      <AuthLayout>
+        <Profile/>
       </AuthLayout>
     ),
   },
