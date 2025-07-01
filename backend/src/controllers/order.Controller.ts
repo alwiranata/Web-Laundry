@@ -8,7 +8,6 @@ import {z} from "zod"
 import {generateUniqueCode} from "../utils/generateCode"
 import {Order} from "../models/order"
 import {AdminRequest} from "../middleware/adminRequest"
-import {json} from "stream/consumers"
 const prisma = new PrismaClient()
 
 export const getOrderForUser = async (
@@ -67,7 +66,63 @@ export const getAllOrder = async (
 				},
 			},
 			orderBy: {
-				createdAt: "asc",
+				createdAt: "desc",
+			},
+		})
+
+		const allPrices = orders.reduce((acc, order) => acc + (order.price || 0), 0)
+
+		res.status(200).json({
+			message: `Daftar order berhasil diambil oleh admin: ${admin.email}`,
+			allPrices: allPrices,
+			orders: orders.length,
+			data: orders,
+		})
+	} catch (error) {
+		if (error instanceof z.ZodError) {
+			res.status(400).json({
+				error: Object.fromEntries(
+					error.errors.map((err) => [err.path[0], err.message])
+				),
+			})
+			return
+		}
+
+		res.status(500).json({
+			message: "Terjadi kesalahan pada server",
+			errors: error,
+		})
+	}
+}
+
+export const getMyOrder = async (
+	req: AdminRequest,
+	res: Response
+): Promise<void> => {
+	try {
+		const admin = req.user
+
+		if (!admin) {
+			res.status(401).json({
+				message: "Akses ditolak token tidak valid",
+			})
+			return
+		}
+
+		const orders = await prisma.order.findMany({
+			where: {
+				adminId: admin.id,
+			},
+			include: {
+				admin: {
+					select: {
+						email: true,
+						name: true,
+					},
+				},
+			},
+			orderBy: {
+				createdAt: "desc", // Tambahan untuk urutkan dari terbaru
 			},
 		})
 

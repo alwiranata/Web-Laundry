@@ -1,4 +1,4 @@
-import {Request, RequestHandler, Response} from "express"
+import {Request,  Response} from "express"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import {PrismaClient} from "@prisma/client"
@@ -7,7 +7,6 @@ import {
 	AdminLoginSchema,
 	AdminRegisterSchema,
 	AdminUpdateSchema,
-	AdminDeleteSchema,
 } from "../validators/adminValidator"
 import {z} from "zod"
 import {AdminRequest} from "../middleware/adminRequest"
@@ -240,17 +239,7 @@ export const updateAdmin= async (
 
     const input = AdminUpdateSchema.parse(req.body);
 
-    // Cegah update email/password diri sendiri saat login
-    if (
-      email === req.user?.email &&
-      ("email" in input || "password" in input)
-    ) {
-      res.status(400).json({
-        message:
-          "Tidak dapat mengubah email atau password akun Anda sendiri saat login.",
-      });
-      return;
-    }
+    
 
     if (input.password) {
       input.password = await bcrypt.hash(input.password, 10);
@@ -322,7 +311,7 @@ export const deleteAdmin = async (req: AdminRequest, res: Response): Promise<voi
 
     if (hashOrders) {
       res.status(403).json({
-        message: "Admin memiliki data order, tidak bisa dihapus",
+        message: "Admin memiliki data Transaksi, tidak bisa dihapus",
       });
       return;
     }

@@ -15,10 +15,9 @@ import {
     getAllOrder,
     updateOrder,
     deleteOrder,
-    deleteAllOrder
-
+    deleteAllOrder,
+    getMyOrder
  } from '../controllers/order.Controller';
-import { verify } from 'crypto';
 
 const router = Router();
 
@@ -48,6 +47,9 @@ router.post('/order/create',authenticateToken, createOrder )
 
 //get All Order
 router.get("/order/getAll", authenticateToken, getAllOrder)
+
+//get All Order
+router.get("/order/getMyOrder", authenticateToken, getMyOrder)
 
 //get Order For User
 router.get('/order/get/:uniqueCode', getOrderForUser)
