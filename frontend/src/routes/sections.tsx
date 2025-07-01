@@ -19,6 +19,7 @@ export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const Register = lazy(() => import('src/pages/register'));
 export const OrderPage = lazy(() => import('src/pages/order'));
 export const MyOrderPage = lazy(() => import('src/pages/myOrder'));
+export const LandingPages = lazy(() => import('src/pages/landing-page'))
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 const renderFallback = () => (
@@ -110,6 +111,14 @@ export const routesSection: RouteObject[] = [
           <Profile />
         </AuthLayout>
       </PrivateRoute>
+    ),
+  },
+   {
+    path: 'cek-laundry',
+    element: (
+        <AuthLayout>
+          <LandingPages/>
+        </AuthLayout>
     ),
   },
   {

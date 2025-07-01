@@ -1,5 +1,5 @@
+
 import { SvgColor } from 'src/components/svg-color';
-import { ShoppingCart } from 'lucide-react';
 
 // ----------------------------------------------------------------------
 

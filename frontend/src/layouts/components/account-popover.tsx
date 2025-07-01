@@ -133,7 +133,7 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
             onClick={() => {
               localStorage.removeItem('token');      // Hapus token
               localStorage.removeItem('email');      // Hapus email
-              router.push('/sign-in');                 // Redirect ke login
+              router.push('/login');                 // Redirect ke login
             }}
           >
             Logout

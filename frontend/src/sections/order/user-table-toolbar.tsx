@@ -1,9 +1,7 @@
 import { useState } from 'react';
 
-import Tooltip from '@mui/material/Tooltip';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 
@@ -28,8 +26,7 @@ export function OrderTableToolbar({
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   return (
-    <>
-      <Toolbar
+    <Toolbar
         sx={{
           height: 96,
           display: 'flex',
@@ -62,8 +59,5 @@ export function OrderTableToolbar({
 
         
       </Toolbar>
-
-      
-    </>
   );
 }

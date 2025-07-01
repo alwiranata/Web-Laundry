@@ -2,14 +2,6 @@ import type { CSSObject, Breakpoint } from '@mui/material/styles';
 
 import { merge } from 'es-toolkit';
 
-import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import Alert from '@mui/material/Alert';
-
-import { RouterLink } from 'src/routes/components';
-
-import { Logo } from 'src/components/logo';
-
 import { AuthContent } from './content';
 import { MainSection } from '../core/main-section';
 import { LayoutSection } from '../core/layout-section';
