@@ -47,7 +47,7 @@ export function SignInView() {
       setAlertOpen(true);
 
       setTimeout(() => {
-        window.location.href = '/dashboard';
+        window.location.href = '/beranda';
       }, 1000);
     } else {
       setAlertSeverity('error');

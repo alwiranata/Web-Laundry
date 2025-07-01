@@ -9,6 +9,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import { Iconify } from 'src/components/iconify';
 
+import { DeleteAllOrderDialog } from './deleteAll/order-deleteAll';
 
 type OrderTableToolbarProps = {
   numSelected: number;
@@ -60,10 +61,31 @@ export function OrderTableToolbar({
           />
         )}
 
-        
+        {numSelected > 0 ? (
+          <Tooltip title="Hapus Semua">
+            <IconButton color="error" onClick={() => setOpenDeleteDialog(true)}>
+              <Iconify icon="solar:trash-bin-trash-bold" />
+            </IconButton>
+          </Tooltip>
+        ) : (
+          <Tooltip title="Filter daftar">
+            <IconButton>
+              <Iconify icon="ic:round-filter-list" />
+            </IconButton>
+          </Tooltip>
+        )}
       </Toolbar>
 
-      
+      <DeleteAllOrderDialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        selectedCount={numSelected}
+        showSnackbar={showSnackbar}
+        onSuccess={() => {
+          setOpenDeleteDialog(false);
+          onSuccess(); // refetch data
+        }}
+      />
     </>
   );
 }

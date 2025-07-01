@@ -9,8 +9,8 @@ import { Logo } from 'src/components/logo';
 
 export function NotFoundView() {
   const isLoggedIn = typeof window !== 'undefined' && !!localStorage.getItem('token');
-  const buttonHref = isLoggedIn ? '/dashboard' : '/sign-in';
-  const buttonText = isLoggedIn ? 'Go to home' : 'Go to Login';
+  const buttonHref = isLoggedIn ? '/beranda' : '/login';
+  const buttonText = isLoggedIn ? 'Beranda' : 'Halaman Login';
 
   return (
     <>
@@ -27,7 +27,7 @@ export function NotFoundView() {
         }}
       >
         <Typography variant="h3" sx={{ mb: 2 }}>
-          Sorry, page not found!
+          Maaf, Halaman Tidak Ditemukan!
         </Typography>
 
         <Typography sx={{ color: 'text.secondary', maxWidth: 480, textAlign: 'center' }}>

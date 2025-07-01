@@ -44,14 +44,14 @@ export function UserTableToolbar({
       >
         {numSelected > 0 ? (
           <Typography component="div" variant="subtitle1">
-            {numSelected} selected
+            {numSelected} Dipilih
           </Typography>
         ) : (
           <OutlinedInput
             fullWidth
             value={filterName}
             onChange={onFilterName}
-            placeholder="Search Email..."
+            placeholder="Cari Email..."
             startAdornment={
               <InputAdornment position="start">
                 <Iconify width={20} icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
@@ -62,7 +62,7 @@ export function UserTableToolbar({
         )}
 
         {numSelected > 0 ? (
-          <Tooltip title="Delete">
+          <Tooltip title="Hapus">
             <IconButton color="error" onClick={() => setOpenDeleteDialog(true)}>
               <Iconify icon="solar:trash-bin-trash-bold" />
             </IconButton>

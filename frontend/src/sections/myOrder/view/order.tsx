@@ -16,12 +16,14 @@ import {
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
+import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 
 import { TableNoData } from '../table-no-data';
 import { OrderTableRow } from '../user-table-row';
 import { UserTableHead } from '../user-table-head';
 import { TableEmptyRows } from '../table-empty-rows';
+import { NewOrderDialog } from '../create/order-create';
 import { OrderTableToolbar } from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
@@ -112,7 +114,7 @@ export function OrderView() {
   const fetchOrders = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:3000/api/order/getAll', {
+      const res = await axios.get('http://localhost:3000/api/order/getMyOrder', {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -159,9 +161,17 @@ export function OrderView() {
     <DashboardContent>
       <Box sx={{ mb: 5, display: 'flex', alignItems: 'center' }}>
         <Typography variant="h4" sx={{ flexGrow: 1 }}>
-          Data Transaksi 
+          Transaksi 
         </Typography>
 
+        <Button
+          variant="contained"
+          color="inherit"
+          startIcon={<Iconify icon="mingcute:add-line" />}
+          onClick={() => setOpenDialog(true)}
+        >
+          Buat Transaksi
+        </Button>
       </Box>
 
       <Card>
@@ -246,6 +256,27 @@ export function OrderView() {
         />
       </Card>
 
+      {/* Dialog Tambah Order */}
+      <NewOrderDialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        onSuccess={() => {
+          setOpenDialog(false);
+          fetchOrders();
+        }}
+      />
+
+      {/* Snackbar Notifikasi */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity={snackbar.severity} onClose={handleCloseSnackbar}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </DashboardContent>
   );
 }

@@ -14,7 +14,8 @@ import {
 
 import { Iconify } from 'src/components/iconify';
 
-
+import { EditOrderDialog } from './update/order-update';
+import { DeleteOrderDialog } from './delete/order-delete';
 import { OrderDetailDialog } from './detail/order-detail';
 // pastikan path sesuai
 export type RowProps = {
@@ -93,6 +94,10 @@ export function OrderTableRow({
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
+        <TableCell padding="checkbox">
+          <Checkbox disableRipple checked={selected} onChange={onSelectRow} />
+        </TableCell>
+
         <TableCell>{row.uniqueCode}</TableCell>
         <TableCell>{row.serviceType}</TableCell>
         <TableCell>{row.serviceCategory}</TableCell>
@@ -142,9 +147,46 @@ export function OrderTableRow({
             <Iconify icon="solar:settings-bold-duotone" />
             Detail
           </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setOpenEditDialog(true);
+              handleClosePopover();
+            }}
+            sx={{ color: "info.main" }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            Edit
+          </MenuItem>
+
+          <MenuItem
+            onClick={() => {
+              setOpenDeleteDialog(true);
+              handleClosePopover();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Hapus
+          </MenuItem>
         </MenuList>
       </Popover>
 
+      <DeleteOrderDialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        uniqueCode={row.uniqueCode}
+        onSuccess={onSuccess}
+        showSnackbar={showSnackbar}
+      />
+
+
+      <EditOrderDialog
+        open={openEditDialog}
+        onClose={() => setOpenEditDialog(false)}
+        onSuccess={onSuccess}
+        showSnackbar={showSnackbar}
+        rowData={row}
+      />
 
       <OrderDetailDialog
         open={openDetailDialog}

@@ -6,6 +6,6 @@ export const _workspaces: WorkspacesPopoverProps['data'] = [
   {
     id: 'E-Laudnry',
     name: 'E-Laundry',
-    logo: '/assets/icons/workspaces/logo-1.webp',
+    logo: '/assets/icons/workspaces/laundry.svg',
   },
 ];

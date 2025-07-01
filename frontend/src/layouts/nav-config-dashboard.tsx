@@ -1,4 +1,5 @@
 import { SvgColor } from 'src/components/svg-color';
+import { ShoppingCart } from 'lucide-react';
 
 // ----------------------------------------------------------------------
 
@@ -13,18 +14,24 @@ export type NavItem = {
 
 export const navData = [
   {
-    title: 'Dashboard',
-    path: '/dashboard',
+    title: 'Beranda',
+    path: '/beranda',
     icon: icon('ic-analytics'),
   },
   {
-    title: 'Admin',
-    path: '/user',
+    title: 'Data Admin',
+    path: '/data-admin',
     icon: icon('ic-user'),
   },
   {
-    title : "Order",
-    path :  '/order',
+    title : "Data Transaksi",
+    path :  '/data-transaksi',
     icon : icon('ic-cart'),
   },
+  {
+    title : "Transaksi ",
+    path :  '/transaksi',
+    icon : icon('ic-my-order')
+  },
+  
 ];

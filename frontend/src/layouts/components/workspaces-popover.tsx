@@ -85,7 +85,6 @@ export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopover
           {workspace?.name}
         </Box>
 
-        <Iconify width={16} icon="carbon:chevron-sort" sx={{ color: 'text.disabled' }} />
       </ButtonBase>
 
       <Popover open={!!openPopover} anchorEl={openPopover} onClose={handleClosePopover}>

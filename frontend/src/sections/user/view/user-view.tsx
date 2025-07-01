@@ -166,7 +166,7 @@ export function UserView() {
     <DashboardContent>
       <Box sx={{ mb: 5, display: 'flex', alignItems: 'center' }}>
         <Typography variant="h4" sx={{ flexGrow: 1 }}>
-          Admin
+         Data Admin
         </Typography>
 
         <Button
@@ -175,7 +175,7 @@ export function UserView() {
           startIcon={<Iconify icon="mingcute:add-line" />}
           onClick={() => setOpenDialog(true)}
         >
-          New Admin
+          Tambah Admin
         </Button>
       </Box>
 

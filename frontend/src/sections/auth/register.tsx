@@ -64,7 +64,7 @@ export function SignUpView() {
         <Typography variant="h5">Register</Typography>
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           Already have an account?
-          <Link href="/sign-in" variant="subtitle2" sx={{ ml: 0.5 }}>
+          <Link href="/login" variant="subtitle2" sx={{ ml: 0.5 }}>
             Login
           </Link>
         </Typography>

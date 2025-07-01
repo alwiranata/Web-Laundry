@@ -56,9 +56,9 @@ export function DeleteAllOrderDialog({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
-      <DialogTitle>Konfirmasi Hapus Semua Order</DialogTitle>
+      <DialogTitle>Konfirmasi Hapus Data Transaksi</DialogTitle>
       <DialogContent>
-        Apakah Anda yakin ingin menghapus <strong>{selectedCount}</strong> order yang Anda buat?
+        Apakah Anda yakin ingin menghapus <strong>{selectedCount}</strong> Transaksi yang Anda buat?
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Batal</Button>
