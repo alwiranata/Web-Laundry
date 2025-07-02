@@ -42,7 +42,7 @@ export function SignUpView() {
       setAlertOpen(true);
 
       // Redirect ke login dalam 2 detik
-      setTimeout(() => router.push('/sign-in'), 2000);
+      setTimeout(() => router.push('/login'), 2000);
     } catch (error: any) {
       setAlertSeverity('error');
       setAlertMessage(error.response?.data?.message || 'Pendaftaran gagal!');

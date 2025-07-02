@@ -7,6 +7,11 @@ import Typography from '@mui/material/Typography';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { AnalyticsWidgetSummary } from '../analytics-widget-summary';
+
+import { _posts,_timeline  } from 'src/_mock';
+
+import { AnalyticsOrderTimeline } from '../analytics-order-timeline';
+import { AnalyticsWebsiteVisits } from '../analytics-website-visits';
 // ----------------------------------------------------------------------
 
 
@@ -130,6 +135,22 @@ export function OverviewAnalyticsView() {
             }}
           />
         </Grid>
+          <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+            <AnalyticsOrderTimeline title="Pendapatan 1 Tahun " list={_timeline} />
+          </Grid>
+         <Grid size={{ xs: 12, md: 6, lg: 8 }}>
+          <AnalyticsWebsiteVisits
+            title="Pendapatan 1 bulan"
+            subheader="Tahun 2025"
+            chart={{
+              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Agus', 'Sep', 'Okt', 'Nov','Des'],
+              series: [
+                { name: 'Team A', data: [51, 70, 47, 67, 40, 37, 24, 70, 24] },
+              ],
+            }}
+          />
+        </Grid>
+
       </Grid>
     </DashboardContent>
   );
