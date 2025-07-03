@@ -22,7 +22,6 @@ type Props = CardProps & {
     options?: ChartOptions;
   };
 };
-
 export function AnalyticsWebsiteVisits({ title, subheader, chart, sx, ...other }: Props) {
   const theme = useTheme();
 
@@ -31,19 +30,29 @@ export function AnalyticsWebsiteVisits({ title, subheader, chart, sx, ...other }
     hexAlpha(theme.palette.warning.main, 0.8),
   ];
 
-  const chartOptions = useChart({
-    colors: chartColors,
-    stroke: { width: 2, colors: ['transparent'] },
-    xaxis: { categories: chart.categories },
-    legend: { show: true },
-    tooltip: { y: { formatter: (value: number) => `${value} visits` } },
-    ...chart.options,
-  });
+ const chartOptions = useChart({
+  colors: chartColors,
+  stroke: { width: 2, colors: ['transparent'] },
+  xaxis: { categories: chart.categories },
+  yaxis: {
+    labels: {
+      formatter: (value: number) => `Rp ${value.toLocaleString('id-ID')}`,
+    },
+  },
+  tooltip: {
+    y: {
+      formatter: (value: number) => `Rp ${value.toLocaleString('id-ID')}`,
+    },
+  },
+  legend: { show: true },
+  ...chart.options,
+});
+
+
 
   return (
     <Card sx={sx} {...other}>
       <CardHeader title={title} subheader={subheader} />
-
       <Chart
         type="bar"
         series={chart.series}

@@ -1,8 +1,6 @@
 import {
   _id,
   _times,
-  _company,
-  _boolean,
   _fullName,
   _postTitles,
   _description,
