@@ -51,7 +51,35 @@ E-Laundry adalah aplikasi manajemen usaha laundry berbasis web yang memungkinkan
 - **Material UI & ApexCharts**
 - **Tailwind CSS (opsional styling tambahan)**
 
+
 ---
 
-## 📂 Struktur Direktori Backend
+## 🔐 Autentikasi Token (JWT)
+
+Token akan di-*generate* saat login dan disertakan di `Authorization` header (Bearer Token) untuk akses endpoint yang dilindungi.
+
+---
+
+## 📦 Instalasi & Setup
+
+```bash
+# 1. Clone repositori
+git clone https://github.com/username/e-laundry.git
+
+# 2. Masuk ke folder backend
+cd e-laundry/backend
+
+# 3. Install dependencies
+npm install
+
+# 4. Setup environment
+cp .env.example .env
+
+# 5. Jalankan migrasi Prisma
+npx prisma migrate dev --name init
+
+# 6. Jalankan server
+npm run dev
+
+
 
