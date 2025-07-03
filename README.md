@@ -1,4 +1,4 @@
-# 🧺 E-Laundry - Fullstack Laundry Management App
+# 🫧✨ E-Laundry - Fullstack Laundry Management App
 
 E-Laundry adalah aplikasi manajemen usaha laundry berbasis web yang memungkinkan pelaku UMKM untuk mengelola transaksi, admin, dan laporan pendapatan dengan mudah dan efisien.
 
