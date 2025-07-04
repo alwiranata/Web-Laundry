@@ -7,5 +7,6 @@ export type Order = {
   dropOffDate: string
   pickUpDate: string
   status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED"
+  payment : "PENDING" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED"
   price ?: number 
 }

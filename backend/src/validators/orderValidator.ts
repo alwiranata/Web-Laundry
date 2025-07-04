@@ -1,4 +1,4 @@
-import { ServiceCategory, ServiceType, OrderStatus } from "@prisma/client"
+import { ServiceCategory, ServiceType, OrderStatus ,OrderStatusPayment } from "@prisma/client"
 import {z} from "zod"
 
 export const OrderItemSchema = z.object({
@@ -10,6 +10,7 @@ export const OrderItemSchema = z.object({
     dropOffDate : z.string().datetime("Tanggal Antar Harus Format ISO"),
     pickUpDate :z.string().datetime("Tanggal Ambil Harus Format ISO"),
     status : z.nativeEnum(OrderStatus),
+    payment : z.nativeEnum(OrderStatusPayment),
     price  :z.number().optional()
 })
 
@@ -22,6 +23,7 @@ export const updateOrderItemSchema = z.object({
     dropOffDate : z.string().datetime("Tanggal Antar Harus Format ISO").optional(),
     pickUpDate :z.string().datetime("Tanggal Ambil Harus Format ISO").optional(),
     status : z.nativeEnum(OrderStatus).optional(),
+    payment  : z.nativeEnum(OrderStatusPayment).optional(),
     price  :z.number().optional()
 })
 

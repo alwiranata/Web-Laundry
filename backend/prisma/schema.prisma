@@ -36,6 +36,13 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum OrderStatusPayment {
+  PENDING 
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
 model Order {
   id     Int  @id @default(autoincrement())
   uniqueCode String @unique //Kode Unik untuk setiap Order
@@ -56,6 +63,7 @@ model Order {
   pickUpDate  DateTime //waktu ambil pakaian
 
   status    OrderStatus //status order : "pending", "in_progress", "completed", "cancelled"
+  payment  OrderStatusPayment //payment order : "pending", "in_progress", "completed", "cancelled"
   price     Int //total harga
   createdAt DateTime    @default(now())
 }
