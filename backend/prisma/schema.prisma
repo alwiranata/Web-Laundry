@@ -38,9 +38,7 @@ enum OrderStatus {
 
 enum OrderStatusPayment {
   PENDING 
-  IN_PROGRESS
   COMPLETED
-  CANCELLED
 }
 
 model Order {
@@ -63,7 +61,7 @@ model Order {
   pickUpDate  DateTime //waktu ambil pakaian
 
   status    OrderStatus //status order : "pending", "in_progress", "completed", "cancelled"
-  payment  OrderStatusPayment //payment order : "pending", "in_progress", "completed", "cancelled"
+  statusPayment  OrderStatusPayment //payment order : "pending",  "completed", 
   price     Int //total harga
   createdAt DateTime    @default(now())
 }

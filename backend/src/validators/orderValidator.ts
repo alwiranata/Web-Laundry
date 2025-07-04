@@ -10,7 +10,7 @@ export const OrderItemSchema = z.object({
     dropOffDate : z.string().datetime("Tanggal Antar Harus Format ISO"),
     pickUpDate :z.string().datetime("Tanggal Ambil Harus Format ISO"),
     status : z.nativeEnum(OrderStatus),
-    payment : z.nativeEnum(OrderStatusPayment),
+    statusPayment : z.nativeEnum(OrderStatusPayment),
     price  :z.number().optional()
 })
 

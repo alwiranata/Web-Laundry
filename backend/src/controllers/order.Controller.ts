@@ -224,7 +224,7 @@ export const createOrder = async (
 				dropOffDate: new Date(input.dropOffDate),
 				pickUpDate: new Date(input.pickUpDate),
 				status: input.status,
-				payment: input.payment,
+				statusPayment :input.statusPayment,
 				price: price ?? 0,
 			},
 		})
