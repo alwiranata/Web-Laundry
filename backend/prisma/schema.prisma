@@ -62,6 +62,7 @@ model Order {
 
   status    OrderStatus //status order : "pending", "in_progress", "completed", "cancelled"
   statusPayment  OrderStatusPayment //payment order : "pending",  "completed", 
-  price     Int //total harga
+  
+  price     Int //total harga 
   createdAt DateTime    @default(now())
 }
