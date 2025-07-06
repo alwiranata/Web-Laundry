@@ -32,7 +32,7 @@ export function EditOrderDialog({ open, onClose, onSuccess, showSnackbar, rowDat
   }, [rowData]);
 
   const handleChange = (field: string) => (e: any) => {
-    setForm((prev : any) => ({ ...prev, [field]: e.target.value }));
+    setForm((prev: any) => ({ ...prev, [field]: e.target.value }));
   };
 
   const handleSubmit = async () => {
@@ -51,6 +51,7 @@ export function EditOrderDialog({ open, onClose, onSuccess, showSnackbar, rowDat
           dropOffDate: new Date(form.dropOffDate).toISOString(),
           pickUpDate: new Date(form.pickUpDate).toISOString(),
           status: form.status,
+          statusPayment :form.statusPayment,
           price: Number(form.price),
         },
         {
@@ -105,14 +106,30 @@ export function EditOrderDialog({ open, onClose, onSuccess, showSnackbar, rowDat
           <TextField fullWidth label="Berat (Kg)" type="number" value={form.weight} onChange={handleChange('weight')} />
           <TextField fullWidth label="Tanggal Antar" type="date" value={form.dropOffDate.split('T')[0]} onChange={handleChange('dropOffDate')} InputLabelProps={{ shrink: true }} />
           <TextField fullWidth label="Tanggal Jemput" type="date" value={form.pickUpDate.split('T')[0]} onChange={handleChange('pickUpDate')} InputLabelProps={{ shrink: true }} />
-          
+
           <FormControl fullWidth>
-            <InputLabel>Status</InputLabel>
-            <Select value={form.status} label="Status" onChange={handleChange('status')}>
-              <MenuItem value="PENDING">PENDING</MenuItem>
-              <MenuItem value="IN_PROGRESS">IN_PROGRESS</MenuItem>
-              <MenuItem value="COMPLETED">COMPLETED</MenuItem>
-              <MenuItem value="CANCELLED">CANCELLED</MenuItem>
+            <InputLabel>Status Pengerjaan</InputLabel>
+            <Select
+              value={form.status}
+              label="Status Pengerjaan"
+              onChange={handleChange("status")}
+            >
+              <MenuItem value="PENDING">Ditunda</MenuItem>
+              <MenuItem value="IN_PROGRESS">Diproses</MenuItem>
+              <MenuItem value="COMPLETED">Diselesaikan</MenuItem>
+              <MenuItem value="CANCELLED">Dibatalkan</MenuItem>
+            </Select>
+          </FormControl>
+
+          <FormControl fullWidth>
+            <InputLabel>Status Pembayaran</InputLabel>
+            <Select
+              value={form.statusPayment}
+              label="Status Pembayaran"
+              onChange={handleChange("statusPayment")}
+            >
+              <MenuItem value="PENDING">Belum Dibayar</MenuItem>
+              <MenuItem value="COMPLETED">Lunas</MenuItem>
             </Select>
           </FormControl>
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 
 import {
   Box,
@@ -24,6 +25,7 @@ export interface Order {
   pickUpDate: string;
   dropOffDate: string;
   status: string;
+  statusPayment: string;
   price: number;
   createdAt?: string;
 }
@@ -37,18 +39,28 @@ interface Props {
 const StatusChip = ({ status }: { status: string }) => {
   switch (status) {
     case 'PENDING':
-      return <Chip label="Tunda" color="warning" variant="outlined" />;
+      return <Chip label="Ditunda" color="warning" variant="outlined" />;
     case 'IN_PROGRESS':
-      return <Chip label="Proses" color="info" variant="outlined" />;
+      return <Chip label="Diproses" color="info" variant="outlined" />;
     case 'COMPLETED':
-      return <Chip label="Selesai" color="success" variant="outlined" />;
+      return <Chip label="Diselesaikan" color="success" variant="outlined" />;
     case 'CANCELLED':
-      return <Chip label="Batal" color="error" variant="outlined" />;
+      return <Chip label="Dibatalkan" color="error" variant="outlined" />;
     default:
       return <Chip label={status} variant="outlined" />;
   }
 };
 
+const StatusPayment = ({ statusPayment }: { statusPayment: string }) => {
+  switch (statusPayment) {
+    case 'PENDING':
+      return <Chip label="Belum Dibayar" color="error" variant="outlined" />;
+    case 'COMPLETED':
+      return <Chip label="Lunas" color="success" variant="outlined" />;
+    default:
+      return <Chip label={statusPayment} variant="outlined" />;
+  }
+};
 
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
@@ -56,10 +68,8 @@ const formatDate = (dateString: string): string => {
   const month = date.getMonth() + 1;
   const year = date.getFullYear();
 
-
-  return `${day} - ${month} - ${year}  `;
+  return `${day} - ${month} - ${year}`;
 };
-
 
 const DetailItem = ({ label, value }: { label: string; value: string | number | React.ReactNode }) => (
   <Stack direction="row" justifyContent="space-between" sx={{ py: 0.5 }}>
@@ -78,6 +88,19 @@ const DetailItem = ({ label, value }: { label: string; value: string | number | 
 
 export function OrderDetailDialog({ open, onClose, order }: Props) {
   if (!order) return null;
+
+  const handleBayar = async () => {
+    try {
+      const res = await axios.post('http://localhost:3000/api/payment/create', {
+        orderId: order.id,
+        amount: order.price,
+      });
+
+      window.location.href = res.data.paymentUrl; // Redirect ke payment gateway
+    } catch (err) {
+      alert('Gagal memproses pembayaran.');
+    }
+  };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
@@ -99,7 +122,8 @@ export function OrderDetailDialog({ open, onClose, order }: Props) {
           <DetailItem label="Berat" value={`${order.weight} Kg`} />
           <DetailItem label="Tanggal Antar" value={formatDate(order.dropOffDate)} />
           <DetailItem label="Tanggal Ambil" value={formatDate(order.pickUpDate)} />
-          <DetailItem label="Status" value={<StatusChip status={order.status} />} />
+          <DetailItem label="Status Pengerjaan" value={<StatusChip status={order.status} />} />
+          <DetailItem label="Status Pembayaran" value={<StatusPayment statusPayment={order.statusPayment} />} />
           <Divider sx={{ my: 1 }} />
           <DetailItem label="Total Biaya" value={`Rp ${order.price.toLocaleString()}`} />
 
@@ -115,9 +139,13 @@ export function OrderDetailDialog({ open, onClose, order }: Props) {
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={onClose} variant="contained">
-          Tutup
-        </Button>
+        <Button onClick={onClose}>Tutup</Button>
+
+        {order.statusPayment === 'PENDING' && (
+          <Button onClick={handleBayar} variant="outlined" color='primary' >
+            Bayar Sekarang
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

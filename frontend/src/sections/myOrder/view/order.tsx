@@ -38,6 +38,7 @@ export type RowProps = {
   pickUpDate: string;
   dropOffDate: string;
   status: string;
+  statusPayment : string
   price: number;
   admin: {
     email: string;
@@ -129,6 +130,7 @@ export function OrderView() {
         pickUpDate: order.pickUpDate,
         dropOffDate: order.dropOffDate,
         status: order.status,
+        statusPayment : order.statusPayment,
         price: order.price,
         admin: {
           email: order.admin?.email || '-', 

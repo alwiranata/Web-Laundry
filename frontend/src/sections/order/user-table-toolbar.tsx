@@ -1,4 +1,3 @@
-import { useState } from 'react';
 
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -20,10 +19,7 @@ export function OrderTableToolbar({
   numSelected,
   filterName,
   onFilterName,
-  showSnackbar,
-  onSuccess,
 }: OrderTableToolbarProps) {
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   return (
     <Toolbar

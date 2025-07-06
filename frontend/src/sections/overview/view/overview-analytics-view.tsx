@@ -2,17 +2,15 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
 import Grid from '@mui/material/Grid';
+import ListItem from '@mui/material/ListItem';
+import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 
-import { _timeline } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { AnalyticsWidgetSummary } from '../analytics-widget-summary';
-
 import { AnalyticsWebsiteVisits } from '../analytics-website-visits';
 // ----------------------------------------------------------------------
 
@@ -130,7 +128,7 @@ export function OverviewAnalyticsView() {
             total={totalPendapatan}
             color="warning"
             icon={<img alt="Purchase orders" src="/assets/icons/glass/ic-glass-buy.svg" />}
-            isCurrency = {true}
+            isCurrency
             chart={{
               categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
               series: [40, 70, 50, 28, 70, 75, 7, 64],
@@ -145,7 +143,7 @@ export function OverviewAnalyticsView() {
             total={myPrice}
             color="error"
             icon={<img alt="Messages" src="/assets/icons/glass/ic-glass-message.svg" />}
-            isCurrency = {true}
+            isCurrency
             chart={{
               categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
               series: [56, 30, 23, 54, 47, 40, 62, 73],

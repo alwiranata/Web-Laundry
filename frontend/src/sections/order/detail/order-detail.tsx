@@ -38,7 +38,7 @@ export function OrderDetailDialog({ open, onClose, email, name }: Props) {
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={onClose}>Tutup</Button>
+        <Button onClick={onClose} variant='contained'>Tutup</Button>
       </DialogActions>
     </Dialog>
   );

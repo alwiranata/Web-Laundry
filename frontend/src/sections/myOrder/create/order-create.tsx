@@ -23,6 +23,7 @@ interface Props {
     onSuccess: () => void;
 }
 
+
 export function NewOrderDialog({ open, onClose, onSuccess }: Props) {
     const [form, setForm] = useState({
         serviceType: "",
@@ -33,6 +34,7 @@ export function NewOrderDialog({ open, onClose, onSuccess }: Props) {
         dropOffDate: "",
         pickUpDate: "",
         status: "",
+        statusPayment: "",
         price: "",
     });
 
@@ -75,6 +77,7 @@ export function NewOrderDialog({ open, onClose, onSuccess }: Props) {
                     dropOffDate: dropOffISO,
                     pickUpDate: pickUpISO,
                     status: form.status,
+                    statusPayment: form.statusPayment,
                     price: Number(form.price),
                 },
                 {
@@ -177,16 +180,28 @@ export function NewOrderDialog({ open, onClose, onSuccess }: Props) {
                         />
 
                         <FormControl fullWidth>
-                            <InputLabel>Status</InputLabel>
+                            <InputLabel>Status Pengerjaan</InputLabel>
                             <Select
                                 value={form.status}
-                                label="Status"
+                                label="Status Pengerjaan"
                                 onChange={handleChange("status")}
                             >
-                                <MenuItem value="PENDING">PENDING</MenuItem>
-                                <MenuItem value="IN_PROGRESS">IN_PROGRESS</MenuItem>
-                                <MenuItem value="COMPLETED">COMPLETED</MenuItem>
-                                <MenuItem value="CANCELLED">CANCELLED</MenuItem>
+                                <MenuItem value="PENDING">Ditunda</MenuItem>
+                                <MenuItem value="IN_PROGRESS">Diproses</MenuItem>
+                                <MenuItem value="COMPLETED">Diselesaikan</MenuItem>
+                                <MenuItem value="CANCELLED">Dibatalkan</MenuItem>
+                            </Select>
+                        </FormControl>
+
+                        <FormControl fullWidth>
+                            <InputLabel>Status Pembayaran</InputLabel>
+                            <Select
+                                value={form.statusPayment}
+                                label="Status Pembayaran"
+                                onChange={handleChange("statusPayment")}
+                            >
+                                <MenuItem value="PENDING">Belum Dibayar</MenuItem>
+                                <MenuItem value="COMPLETED">Lunas</MenuItem>
                             </Select>
                         </FormControl>
 

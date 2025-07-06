@@ -33,6 +33,7 @@ export type RowProps = {
   pickUpDate: string;
   dropOffDate: string;
   status: string;
+  statusPayment : string
   price: number;
   admin: {
     email: string;
@@ -90,7 +91,6 @@ export function OrderView() {
   const [orders, setOrders] = useState<RowProps[]>([]);
   const [filterName, setFilterName] = useState('');
   const [loading, setLoading] = useState(true);
-  const [openDialog, setOpenDialog] = useState(false);
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -124,11 +124,11 @@ export function OrderView() {
         pickUpDate: order.pickUpDate,
         dropOffDate: order.dropOffDate,
         status: order.status,
+        statusPayment : order.statusPayment,
         price: order.price,
         admin: {
           email: order.admin?.email || '-', 
-          name: order.admin?.name || '-', // Tambahkan ini
-// Tambahkan ini
+          name: order.admin?.name || '-', 
         },
       }));
 
@@ -158,7 +158,6 @@ export function OrderView() {
         <Typography variant="h4" sx={{ flexGrow: 1 }}>
           Data Transaksi 
         </Typography>
-
       </Box>
 
       <Card>

@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
 
 import {
-  Chip,
   Popover,
   TableRow,
   MenuList,
@@ -14,7 +13,8 @@ import {
 import { Iconify } from 'src/components/iconify';
 
 import { OrderDetailDialog } from './detail/order-detail';
-// pastikan path sesuai
+import { OrderStatusDialog } from './status/order-status';
+
 export type RowProps = {
   id: number;
   uniqueCode: string;
@@ -26,10 +26,11 @@ export type RowProps = {
   pickUpDate: string;
   dropOffDate: string;
   status: string;
+  statusPayment: string;
   price: number;
   admin: {
     email: string;
-    name : string
+    name: string;
   };
 };
 
@@ -49,21 +50,6 @@ function formatDate(date: string) {
   });
 }
 
-function formatStatus(status: string) {
-  switch (status) {
-    case 'PENDING':
-      return <Chip label="Tunda" color='warning' variant='outlined' />;
-    case 'IN_PROGRESS':
-      return <Chip label="Proses" color='info' variant='outlined' />;
-    case 'COMPLETED':
-      return <Chip label="Selesai" color='success' variant='outlined' />;
-    case 'CANCELLED':
-      return <Chip label="Batal" color='error' variant='outlined' />;
-    default:
-      return status;
-  }
-}
-
 function formatCurrency(value: number) {
   return `${value.toLocaleString('id-ID')}`;
 }
@@ -71,14 +57,10 @@ function formatCurrency(value: number) {
 export function OrderTableRow({
   row,
   selected,
-  onSelectRow,
-  onSuccess,
-  showSnackbar,
 }: OrderTableRowProps) {
   const [openPopover, setOpenPopover] = useState<null | HTMLElement>(null);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
+  const [openStatusDialog, setOpenStatusDialog] = useState(false);
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     setOpenPopover(event.currentTarget);
@@ -99,7 +81,15 @@ export function OrderTableRow({
         <TableCell>{row.weight}</TableCell>
         <TableCell>{formatDate(row.dropOffDate)}</TableCell>
         <TableCell>{formatDate(row.pickUpDate)}</TableCell>
-        <TableCell>{formatStatus(row.status)}</TableCell>
+
+        {/* ✅ Satu tombol untuk buka dialog status */}
+        <TableCell>
+          <IconButton onClick={() => setOpenStatusDialog(true)}>
+           <Iconify icon="solar:info-circle-bold" />
+
+          </IconButton>
+        </TableCell>
+
         <TableCell>{formatCurrency(row.price)}</TableCell>
 
         <TableCell align="right">
@@ -109,6 +99,7 @@ export function OrderTableRow({
         </TableCell>
       </TableRow>
 
+      {/* Popover detail */}
       <Popover
         open={!!openPopover}
         anchorEl={openPopover}
@@ -136,14 +127,15 @@ export function OrderTableRow({
             onClick={() => {
               setOpenDetailDialog(true);
               handleClosePopover();
-            }}>
+            }}
+          >
             <Iconify icon="solar:settings-bold-duotone" />
             Detail
           </MenuItem>
         </MenuList>
       </Popover>
 
-
+      {/* Dialog untuk Detail */}
       <OrderDetailDialog
         open={openDetailDialog}
         onClose={() => setOpenDetailDialog(false)}
@@ -151,6 +143,13 @@ export function OrderTableRow({
         name={row.admin?.name ?? '-'}
       />
 
+      {/* ✅ Dialog untuk Status */}
+      <OrderStatusDialog
+        open={openStatusDialog}
+        onClose={() => setOpenStatusDialog(false)}
+        status={row.status}
+        statusPayment={row.statusPayment}
+      />
     </>
   );
 }

@@ -17,6 +17,7 @@ import { Iconify } from 'src/components/iconify';
 import { EditOrderDialog } from './update/order-update';
 import { DeleteOrderDialog } from './delete/order-delete';
 import { OrderDetailDialog } from './detail/order-detail';
+import { OrderStatusDialog } from './status/order-status';
 // pastikan path sesuai
 export type RowProps = {
   id: number;
@@ -29,6 +30,7 @@ export type RowProps = {
   pickUpDate: string;
   dropOffDate: string;
   status: string;
+  statusPayment : string
   price: number;
   admin: {
     email: string;
@@ -55,13 +57,13 @@ function formatDate(date: string) {
 function formatStatus(status: string) {
   switch (status) {
     case 'PENDING':
-      return <Chip label="Tunda" color='warning' variant='outlined' />;
+      return <Chip label="Ditunda" color='warning' variant='outlined' />;
     case 'IN_PROGRESS':
-      return <Chip label="Proses" color='info' variant='outlined' />;
+      return <Chip label="Diproses" color='info' variant='outlined' />;
     case 'COMPLETED':
-      return <Chip label="Selesai" color='success' variant='outlined' />;
+      return <Chip label="Diselesaikan" color='success' variant='outlined' />;
     case 'CANCELLED':
-      return <Chip label="Batal" color='error' variant='outlined' />;
+      return <Chip label="Dibatalkan" color='error' variant='outlined' />;
     default:
       return status;
   }
@@ -82,6 +84,7 @@ export function OrderTableRow({
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
+  const [openStatusDialog, setOpenStatusDialog] = useState(false);
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     setOpenPopover(event.currentTarget);
@@ -106,7 +109,15 @@ export function OrderTableRow({
         <TableCell>{row.weight}</TableCell>
         <TableCell>{formatDate(row.dropOffDate)}</TableCell>
         <TableCell>{formatDate(row.pickUpDate)}</TableCell>
-        <TableCell>{formatStatus(row.status)}</TableCell>
+       
+        {/* ✅ Satu tombol untuk buka dialog status */}
+        <TableCell>
+          <IconButton onClick={() => setOpenStatusDialog(true)}>
+           <Iconify icon="solar:info-circle-bold" />
+
+          </IconButton>
+        </TableCell>
+
         <TableCell>{formatCurrency(row.price)}</TableCell>
 
         <TableCell align="right">
@@ -195,6 +206,14 @@ export function OrderTableRow({
         name={row.admin?.name ?? '-'}
       />
 
+
+      {/* ✅ Dialog untuk Status */}
+      <OrderStatusDialog
+        open={openStatusDialog}
+        onClose={() => setOpenStatusDialog(false)}
+        status={row.status}
+        statusPayment={row.statusPayment}
+      />
     </>
   );
 }
