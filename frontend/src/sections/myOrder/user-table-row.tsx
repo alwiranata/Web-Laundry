@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
 
 import {
-  Chip,
   Popover,
   TableRow,
   Checkbox,
@@ -54,20 +53,6 @@ function formatDate(date: string) {
   });
 }
 
-function formatStatus(status: string) {
-  switch (status) {
-    case 'PENDING':
-      return <Chip label="Ditunda" color='warning' variant='outlined' />;
-    case 'IN_PROGRESS':
-      return <Chip label="Diproses" color='info' variant='outlined' />;
-    case 'COMPLETED':
-      return <Chip label="Diselesaikan" color='success' variant='outlined' />;
-    case 'CANCELLED':
-      return <Chip label="Dibatalkan" color='error' variant='outlined' />;
-    default:
-      return status;
-  }
-}
 
 function formatCurrency(value: number) {
   return `${value.toLocaleString('id-ID')}`;

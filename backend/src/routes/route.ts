@@ -19,6 +19,8 @@ import {
     getMyOrder
  } from '../controllers/order.Controller';
 
+import {createPayment, midtransNotification} from "../controllers/payment.controller"
+
 const router = Router();
 
 //Admin Register
@@ -63,5 +65,7 @@ router.delete('/order/delete/:uniqueCode', authenticateToken, deleteOrder)
 //delete AllOrder
 router.delete('/order/deleteAllOrder', authenticateToken ,deleteAllOrder)
 
-
+//paymnet 
+router.post("/payment", createPayment)
+router.post("/payment/notification", midtransNotification)
 export default router;

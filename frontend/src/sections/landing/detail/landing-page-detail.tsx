@@ -89,18 +89,23 @@ const DetailItem = ({ label, value }: { label: string; value: string | number | 
 export function OrderDetailDialog({ open, onClose, order }: Props) {
   if (!order) return null;
 
-  const handleBayar = async () => {
-    try {
-      const res = await axios.post('http://localhost:3000/api/payment/create', {
-        orderId: order.id,
-        amount: order.price,
-      });
+  
+  // fungsi bayar
+const handleBayar = async () => {
+  try {
+    const res = await axios.post('http://localhost:3000/api/payment', {
+      orderId: order.uniqueCode,
+      amount: order.price,
+    });
 
-      window.location.href = res.data.paymentUrl; // Redirect ke payment gateway
-    } catch (err) {
-      alert('Gagal memproses pembayaran.');
-    }
-  };
+    window.location.href = res.data.paymentUrl;
+  } catch (err: any) {
+    alert(err +'Gagal memproses pembayaran.');
+  }
+};
+
+
+
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
@@ -142,10 +147,10 @@ export function OrderDetailDialog({ open, onClose, order }: Props) {
         <Button onClick={onClose}>Tutup</Button>
 
         {order.statusPayment === 'PENDING' && (
-          <Button onClick={handleBayar} variant="outlined" color='primary' >
-            Bayar Sekarang
-          </Button>
-        )}
+  <Button onClick={handleBayar} variant="contained" color="primary">
+    Bayar Sekarang
+  </Button>
+)}
       </DialogActions>
     </Dialog>
   );

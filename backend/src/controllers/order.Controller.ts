@@ -43,95 +43,96 @@ export const getOrderForUser = async (
 }
 
 export const getAllOrder = async (
-  req: AdminRequest,
-  res: Response
+	req: AdminRequest,
+	res: Response
 ): Promise<void> => {
-  try {
-    const admin = req.user;
+	try {
+		const admin = req.user
 
-    if (!admin) {
-      res.status(401).json({
-        message: 'Akses ditolak, token tidak valid',
-      });
-      return;
-    }
+		if (!admin) {
+			res.status(401).json({
+				message: "Akses ditolak, token tidak valid",
+			})
+			return
+		}
 
-    const orders = await prisma.order.findMany({
-      include: {
-        admin: {
-          select: {
-            email: true,
-            name: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+		const orders = await prisma.order.findMany({
+			include: {
+				admin: {
+					select: {
+						email: true,
+						name: true,
+					},
+				},
+			},
+			orderBy: {
+				createdAt: "desc",
+			},
+		})
 
-    // Total semua harga
-    const allPrices = orders.reduce((acc, order) => acc + (order.price || 0), 0);
+		// Total semua harga
+		const allPrices = orders.reduce((acc, order) => acc + (order.price || 0), 0)
 
-    // ===============================
-    // ✅ Pendapatan Bulanan (tahun ini)
-    const monthlyIncome = Array(12).fill(0); // index 0 = Jan, 11 = Des
-    const currentYear = new Date().getFullYear();
+		// ===============================
+		// ✅ Pendapatan Bulanan (tahun ini)
+		const monthlyIncome = Array(12).fill(0) // index 0 = Jan, 11 = Des
+		const currentYear = new Date().getFullYear()
 
-    orders.forEach((order) => {
-      const createdAt = new Date(order.createdAt);
-      const year = createdAt.getFullYear();
-      if (year === currentYear) {
-        const monthIndex = createdAt.getMonth(); // 0 - 11
-        monthlyIncome[monthIndex] += order.price || 0;
-      }
-    });
+		orders.forEach((order) => {
+			const createdAt = new Date(order.createdAt)
+			const year = createdAt.getFullYear()
+			if (year === currentYear) {
+				const monthIndex = createdAt.getMonth() // 0 - 11
+				monthlyIncome[monthIndex] += order.price || 0
+			}
+		})
 
-    // ===============================
-    // ✅ Timeline Order 1 Tahun Terakhir
-    const oneYearAgo = new Date();
-    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+		// ===============================
+		// ✅ Timeline Order 1 Tahun Terakhir
+		const oneYearAgo = new Date()
+		oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
 
-    // ===============================
-    // ✅ Pendapatan per Tahun
-	const yearlySummaryMap = new Map();
+		// ===============================
+		// ✅ Pendapatan per Tahun
+		const yearlySummaryMap = new Map()
 
-	orders.forEach((order) => {
-	const year = new Date(order.createdAt).getFullYear();
-	const currentTotal = yearlySummaryMap.get(year) || 0;
-	yearlySummaryMap.set(year, currentTotal + (order.price || 0));
-	});
+		orders.forEach((order) => {
+			const year = new Date(order.createdAt).getFullYear()
+			const currentTotal = yearlySummaryMap.get(year) || 0
+			yearlySummaryMap.set(year, currentTotal + (order.price || 0))
+		})
 
-	const yearlySummary = Array.from(yearlySummaryMap, ([year, total]) => ({
-	year: year.toString(),
-	total,
-	}));
+		const yearlySummary = Array.from(yearlySummaryMap, ([year, total]) => ({
+			year: year.toString(),
+			total,
+		}))
 
-    // ===============================
-    // ✅ Response Final
-    res.status(200).json({
-      message: `Daftar order berhasil diambil oleh admin: ${admin.email}`,
-      allPrices : allPrices,
-      orders: orders.length,
-      data: orders,
-      monthlyIncome : monthlyIncome ,
-  yearlySummary: yearlySummary, // ✅ BENAR
-    })
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      res.status(400).json({
-        error: Object.fromEntries(error.errors.map((err) => [err.path[0], err.message])),
-      });
-      return;
-    }
+		// ===============================
+		// ✅ Response Final
+		res.status(200).json({
+			message: `Daftar order berhasil diambil oleh admin: ${admin.email}`,
+			allPrices: allPrices,
+			orders: orders.length,
+			data: orders,
+			monthlyIncome: monthlyIncome,
+			yearlySummary: yearlySummary, // ✅ BENAR
+		})
+	} catch (error) {
+		if (error instanceof z.ZodError) {
+			res.status(400).json({
+				error: Object.fromEntries(
+					error.errors.map((err) => [err.path[0], err.message])
+				),
+			})
+			return
+		}
 
-    res.status(500).json({
-      message: 'Terjadi kesalahan pada server',
-      errors: error,
-    });
-  }
-};
-
+		res.status(500).json({
+			message: "Terjadi kesalahan pada server",
+			errors: error,
+		})
+	}
+}
 
 export const getMyOrder = async (
 	req: AdminRequest,
@@ -224,7 +225,7 @@ export const createOrder = async (
 				dropOffDate: new Date(input.dropOffDate),
 				pickUpDate: new Date(input.pickUpDate),
 				status: input.status,
-				statusPayment :input.statusPayment,
+				statusPayment: input.statusPayment,
 				price: price ?? 0,
 			},
 		})

@@ -5,10 +5,10 @@ import laundryIcon from '@iconify-icons/mdi/washing-machine';
 
 import {
   Box,
-  Snackbar,
-  Button,
   Alert,
+  Button,
   Avatar,
+  Snackbar,
   Container,
   TextField,
   Typography,
@@ -60,6 +60,7 @@ export default function LandingPage() {
       return;
     }
 
+    
     try {
       setLoading(true);
       const res = await axios.get(`http://localhost:3000/api/order/get/${uniqueCode}`);
