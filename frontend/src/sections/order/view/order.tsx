@@ -5,10 +5,13 @@ import {
   Box,
   Card,
   Table,
+  Alert,
+  Snackbar,
   TableBody,
   Typography,
   TableContainer,
   TablePagination,
+  CircularProgress
 } from '@mui/material';
 
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -93,6 +96,7 @@ export function OrderView() {
   const [loading, setLoading] = useState(true);
 
   const [snackbar, setSnackbar] = useState({
+    
     open: false,
     message: '',
     severity: 'success' as 'success' | 'error' | 'warning',
@@ -153,13 +157,18 @@ export function OrderView() {
   const notFound = !dataFiltered.length && !!filterName;
 
   return (
-    <DashboardContent>
-      <Box sx={{ mb: 5, display: 'flex', alignItems: 'center' }}>
-        <Typography variant="h4" sx={{ flexGrow: 1 }}>
-          Data Transaksi 
-        </Typography>
-      </Box>
+  <DashboardContent>
+    <Box sx={{ mb: 5, display: 'flex', alignItems: 'center' }}>
+      <Typography variant="h4" sx={{ flexGrow: 1 }}>
+        Data Transaksi 
+      </Typography>
+    </Box>
 
+    {loading ? (
+      <Box sx={{ py: 5, display: 'flex', justifyContent: 'center' }}>
+        <CircularProgress />
+      </Box>
+    ) : (
       <Card>
         <OrderTableToolbar
           numSelected={table.selected.length}
@@ -174,7 +183,6 @@ export function OrderView() {
             table.onSelectAllRows(false, []);
           }}
         />
-
 
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
@@ -241,7 +249,19 @@ export function OrderView() {
           onRowsPerPageChange={table.onChangeRowsPerPage}
         />
       </Card>
+    )}
 
-    </DashboardContent>
-  );
+    <Snackbar
+      open={snackbar.open}
+      autoHideDuration={3000}
+      onClose={handleCloseSnackbar}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+    >
+      <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
+        {snackbar.message}
+      </Alert>
+    </Snackbar>
+  </DashboardContent>
+);
+
 }
