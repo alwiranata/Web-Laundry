@@ -19,9 +19,6 @@ const core = new midtransClient.CoreApi({
 export const createPayment = async (req: Request, res: Response) => {
 	const {orderId, amount} = req.body
 
-	console.log("ORDER_ID:", orderId)
-	console.log("AMOUNT:", amount)
-
 	try {
 		const parameter = {
 			transaction_details: {
@@ -31,7 +28,6 @@ export const createPayment = async (req: Request, res: Response) => {
 			credit_card: {
 				secure: true,
 			},
-			// ✅ Tambahkan ini agar notifikasi dikirim ke backend kamu
 			notification_url: process.env.NOTIFICATION_URL,
 		}
 
@@ -51,8 +47,6 @@ export const midtransNotification = async (req: Request, res: Response) => {
 	try {
 		const notificationJson = req.body
 
-		console.log("📨 Notifikasi diterima:", notificationJson)
-
 		const statusResponse = await core.transaction.notification(notificationJson)
 
 		const orderId = statusResponse.order_id
@@ -64,24 +58,20 @@ export const midtransNotification = async (req: Request, res: Response) => {
 				where: {uniqueCode: orderId},
 				data: {statusPayment: "COMPLETED"},
 			})
-			console.log("✅ Status pembayaran diubah jadi COMPLETED")
 		} else if (transactionStatus === "expire") {
 			await prisma.order.updateMany({
 				where: {uniqueCode: orderId},
 				data: {statusPayment: "PENDING"},
 			})
-			console.log("⚠️ Status pembayaran diubah jadi EXPIRED")
 		} else if (transactionStatus === "cancel" || transactionStatus === "deny") {
 			await prisma.order.updateMany({
 				where: {uniqueCode: orderId},
 				data: {statusPayment: "PENDING"},
 			})
-			console.log("❌ Status pembayaran diubah jadi FAILED")
 		}
 
 		res.status(200).json({message: "Notifikasi berhasil diproses"})
 	} catch (error: any) {
-		console.error("❌ Gagal memproses notifikasi Midtrans:", error)
 		res.status(500).json({message: "Gagal memproses notifikasi"})
 	}
 }

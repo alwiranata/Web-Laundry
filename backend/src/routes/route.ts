@@ -20,7 +20,8 @@ import {
  } from '../controllers/order.Controller';
 
 import {createPayment, midtransNotification} from "../controllers/payment.controller"
-
+import {redirectToGithub ,handleGithubCallback} from "../controllers/auth.controller"
+import { redirectToGoogle ,handleGoogleCallback } from '../controllers/authGoggle.controller';
 const router = Router();
 
 //Admin Register
@@ -68,4 +69,13 @@ router.delete('/order/deleteAllOrder', authenticateToken ,deleteAllOrder)
 //paymnet 
 router.post("/payment", createPayment)
 router.post("/payment/notification", midtransNotification)
+
+//github
+router.get('/auth/github', redirectToGithub)
+router.get('/auth/github/callback', handleGithubCallback)
+
+//goggle
+router.get('/auth/google', redirectToGoogle);
+router.get('/auth/google/callback', handleGoogleCallback);
+
 export default router;

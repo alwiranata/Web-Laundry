@@ -62,14 +62,14 @@ const DetailItem = ({ label, value }: { label: string; value: string | number | 
 
 export function OrderDetailDialog({ open, onClose, order }: Props) {
   const printRef = useRef<HTMLDivElement>(null);
-console.log('printRef.current', printRef.current);
+  console.log('printRef.current', printRef.current);
 
-   const handlePrint = useReactToPrint({
-      bodyClass: 'print-content',
-      pageStyle: '@page {  size: A5 portrait; }',
-      // ✅ untuk versi 3.x, kita pakai trigger
-      contentRef: printRef,
-    });
+  const handlePrint = useReactToPrint({
+    bodyClass: 'print-content',
+    pageStyle: '@page {  size: A5 portrait; }',
+    // ✅ untuk versi 3.x, kita pakai trigger
+    contentRef: printRef,
+  });
 
   const handleBayar = async () => {
     if (!order) return;
@@ -89,10 +89,12 @@ console.log('printRef.current', printRef.current);
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
-      <DialogTitle>Detail Transaksi</DialogTitle>
 
       <DialogContent dividers>
         <Box ref={printRef} sx={{ p: 2 }}>
+          <DialogTitle sx={{ textAlign: "center" }}>Detail Transaksi</DialogTitle>
+          <Divider sx={{ my: 1 }} />
+
           <Typography variant="subtitle1">LaundryCare - Bukti Transaksi</Typography>
           {order.createdAt && (
             <Typography variant="caption" color="text.secondary">
@@ -112,7 +114,7 @@ console.log('printRef.current', printRef.current);
           <DetailItem label="Status Pembayaran" value={<StatusPayment statusPayment={order.statusPayment} />} />
           <Divider sx={{ my: 1 }} />
           <DetailItem label="Total Biaya" value={`Rp ${order.price.toLocaleString()}`} />
-          
+
         </Box>
       </DialogContent>
 
