@@ -188,23 +188,21 @@ export function ProfileView() {
                         <Button
                             fullWidth
                             size="large"
-                            variant="contained"
-                            color="primary"
-                            onClick={handleSave}
-                        >
-                            Simpan
-                        </Button>
-                        <Button
-                            fullWidth
-                            size="large"
-                            variant="outlined"
-                            color="inherit"
                             onClick={() => {
                                 setEditing(false);
                                 setProfile({ ...profile, password: '' });
                             }}
                         >
                             Batal
+                        </Button>
+                        <Button
+                            fullWidth
+                            size="large"
+                            variant="contained"
+                            color="primary"
+                            onClick={handleSave}
+                        >
+                            Simpan
                         </Button>
                     </Box>
                 )}
